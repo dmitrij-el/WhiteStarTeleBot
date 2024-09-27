@@ -19,6 +19,14 @@ TEST_PAYMENT_TOKEN_SBERBANK = os.getenv('TEST_PAYMENT_TOKEN_SBERBANK')
 if TEST_PAYMENT_TOKEN_SBERBANK is None:
     exit('TEST_PAYMENT_TOKEN_SBERBANK отсутствует в переменных окружения')
 
+DB_LOGIN = os.getenv('DB_LOGIN')
+if DB_LOGIN is None:
+    exit('DB_LOGIN отсутствует в переменных окружения')
+
+DB_PASSWORD = os.getenv('DB_LOGIN')
+if DB_PASSWORD is None:
+    exit('DB_PASSWORD отсутствует в переменных окружения')
+
 API_HOST_RAPID_MICROSOFT_AZURE = "microsoft-translator-text.p.rapidapi.com"
 API_URL_GIPHY = ''
 API_URL_OPEN_WEATHER_DAY = 'https://api.openweathermap.org/data/2.5/weather'

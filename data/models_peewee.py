@@ -1,9 +1,11 @@
 import datetime
 import logging
 
-from peewee import (CharField, DateTimeField, SqliteDatabase, DateField,
+from peewee import (CharField, DateTimeField, SqliteDatabase, MySQLDatabase, DateField, PostgresqlDatabase,
                     IntegerField, BooleanField, ForeignKeyField)
 from peewee import Model, InternalError, PrimaryKeyField
+
+from config.config import DB_LOGIN, DB_PASSWORD
 
 
 def create_models() -> None:
@@ -13,33 +15,44 @@ def create_models() -> None:
     """
     try:
 
+        data_zona = [
+            {'name_zona': 'VIP-Zona'},
+            {'name_zona': 'Game-Zona'},
+            {'name_zona': 'Bar-Zona'},
+            {'name_zona': 'Well-Bar-Zona'},
+            {'name_zona': 'Well-Rest-Zona'},
+            {'name_zona': 'Center-Rest-Zona'},
+            {'name_zona': 'BackAlley-Rest-Zona'}
+        ]
+        data_tables = [
+            {'number_table': 1},
+        ]
+
         User.create_table()
         Event.create_table()
         Table.create_table()
         TableReservationHistory()
 
         with db_beahea.atomic():
+            for zona in Zona.select():
+                zona.delete_instance()
+            for data_dict in data_zona:
+                Zona.create(**data_dict)
+
             for table in Table.select():
                 table.delete_instance()
-            for num in range(1, 20):
-                x = num % 4
-                if x == 0:
-                    Zona.create(name='VIP')
-                    Table.create(number_table=num, number_of_seats=4, zona=1)
-                elif x == 1:
-                    Zona.create(name='Bar')
-                    Table.create(number_table=num, number_of_seats=6, zona=2)
-                elif x == 2:
-                    Zona.create(name='Central')
-                    Table.create(number_table=num, number_of_seats=8, zona=3)
-                elif x == 3:
-                    Zona.create(name='Restoration')
-                    Table.create(number_table=num, number_of_seats=2, zona=4)
+            for i in range(1, 20):
+                Table.create(number_table=i)
     except InternalError as pw:
         logging.error(pw)
 
 
-db_beahea = SqliteDatabase('C:/Users/dblmo/PycharmProjects/WhiteStarTeleBot/data/database.db')
+db_beahea = MySQLDatabase('j10277899_whitestar',
+                          register_hstore=True,
+                          user=DB_LOGIN,
+                          password=DB_PASSWORD,
+                          host='mysql.32b20e713c92.hosting.myjino.ru/',
+                          port='3306')
 
 
 class BaseUserModel(Model):
@@ -55,8 +68,10 @@ class User(BaseUserModel):
     is_active = BooleanField(default=True, null=True)
 
     phone = CharField(null=True)
-    name = CharField(name=CharField(max_length=63, null=True))
-    username = CharField(name=CharField(max_length=63, null=True))
+    name = CharField(max_length=63, null=True)
+    gender = CharField(null=True)
+    date_birth = DateTimeField(null=True)
+    username = CharField(max_length=63, null=True)
 
     class Meta:
         db_table = "user"
@@ -65,6 +80,10 @@ class User(BaseUserModel):
 class Event(BaseUserModel):
     id = PrimaryKeyField(unique=True)
     name_event = CharField()
+    description_event = CharField()
+    creation_time = DateTimeField(default=datetime.datetime.now)
+    start_time_event = DateTimeField()
+    end_time_event = DateTimeField()
 
     class Meta:
         db_table = "event"
@@ -80,7 +99,7 @@ class Zona(BaseUserModel):
 
 class Table(BaseUserModel):
     number_table = IntegerField()
-    number_of_seats = IntegerField()
+    number_of_seats = IntegerField(null=True)
     zona = ForeignKeyField(Zona, backref='zona', null=True)
 
     class Meta:
