@@ -2,7 +2,8 @@
 
 import logging
 from data.models_peewee import db_beahea
-from data.models_peewee import User
+from data.models_peewee import User, Admin
+from config.config import ADMIN_DIMA
 
 
 def check_user_datas(user_id: int) -> bool:
@@ -13,7 +14,7 @@ def check_user_datas(user_id: int) -> bool:
     """
     try:
         with db_beahea:
-            user = User.select().where(User.user_id == user_id).get()
+            user = User.select().where(User.user_id == user_id)
             return bool(user)
     except Exception as exp:
         logging.error(f'В процессе проверки на наличие пользователя произошла непредвиденная ошибка\n'
@@ -68,7 +69,6 @@ def user_update_data(user_id: int, column_datas: str, data: str | int | bool) ->
     """
     try:
         with db_beahea:
-
             user = User.update({column_datas: data}).where(User.user_id == user_id)
             user.execute()
         return True
@@ -76,3 +76,15 @@ def user_update_data(user_id: int, column_datas: str, data: str | int | bool) ->
         logging.error(f'В процессе обновления данных пользователя {user_id} по ключу произошла непредвиденная ошибка\n'
                       f'Ошибка: {exp}')
         return False
+
+
+def check_admin(user_id: int):
+    admin_list = list()
+    admin_list.append(int(ADMIN_DIMA))
+    with db_beahea:
+        adm = Admin.select(Admin.user_id)
+        for id_adm in adm:
+            admin_list.append(int(id_adm.user_id))
+    return bool(user_id in admin_list)
+
+

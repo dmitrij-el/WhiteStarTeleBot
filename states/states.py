@@ -9,11 +9,39 @@ from aiogram.fsm.state import StatesGroup, State
 class StateMenu(StatesGroup):
     main_menu = State()
     table_reservations = State()
+    party_reservations = State()
     info_events = State()
     user_profile = State()
     info_rest = State()
-    admin_menu = State()
+    menu_rest = State()
     help = State()
+
+
+class StateAdminMenu(StatesGroup):
+    admin_main_menu = State()
+
+    admin_table_reservations = State()
+    admin_add_table_reservations_phone = State()
+    admin_add_table_reservations_table = State()
+    admin_add_table_reservations_booking_start_time_date = State()
+    admin_add_table_reservations_booking_start_time_time = State()
+    admin_add_table_reservations_number_of_guests = State()
+    admin_delete_table_reservations = State()
+
+    admin_party_reservations = State()
+    admin_add_party_reservations = State()
+    admin_add_party_reservations_booking_start_time_date = State()
+    admin_add_party_reservations_booking_start_time_time = State()
+    admin_add_party_reservations_number_of_guests = State()
+    admin_delete_party_reservations = State()
+
+    admin_events = State()
+    admin_add_events = State()
+    admin_delete_events = State()
+
+    admin_admin_list = State()
+    admin_add_admin_list = State()
+    admin_delete_admin_list = State()
 
 
 class StateTableReservations(StatesGroup):
@@ -32,5 +60,3 @@ class StateUserProfile(StatesGroup):
     clear_profile = State()
 
 
-class StateAdminMenu(StatesGroup):
-    main_admin_menu = State()

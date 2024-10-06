@@ -1,11 +1,11 @@
 import datetime
 import logging
 
-from peewee import (CharField, DateTimeField, SqliteDatabase, MySQLDatabase, DateField, PostgresqlDatabase,
-                    IntegerField, BooleanField, ForeignKeyField)
+from peewee import (CharField, DateTimeField, MySQLDatabase,
+                    IntegerField, BooleanField, ForeignKeyField, SqliteDatabase)
 from peewee import Model, InternalError, PrimaryKeyField
 
-from config.config import DB_LOGIN, DB_PASSWORD
+from config.config import DB_LOGIN, DB_PASSWORD, DB_HOST, DB_NAME, DB_PORT
 
 
 def create_models() -> None:
@@ -24,41 +24,61 @@ def create_models() -> None:
             {'name_zona': 'Center-Rest-Zona'},
             {'name_zona': 'BackAlley-Rest-Zona'}
         ]
+        data_gender = [
+            {'name': 'men', 'symbol': '♂️'},
+            {'name': 'women', 'symbol': '♀️'}]
         data_tables = [
             {'number_table': 1},
         ]
 
+        Gender.create_table()
         User.create_table()
+        Admin.create_table()
+        Zona.create_table()
         Event.create_table()
         Table.create_table()
-        TableReservationHistory()
+        TableReservationHistory.create_table()
 
         with db_beahea.atomic():
-            for zona in Zona.select():
-                zona.delete_instance()
-            for data_dict in data_zona:
-                Zona.create(**data_dict)
-
-            for table in Table.select():
-                table.delete_instance()
-            for i in range(1, 20):
-                Table.create(number_table=i)
+            zona = Zona.select()
+            if not zona:
+                for data_dict in data_zona:
+                    Zona.create(**data_dict)
+            gender = Gender.select()
+            if not gender:
+                for data_dict in data_gender:
+                    Gender.create(**data_dict)
+            table = Table.select()
+            if not table:
+                for i in range(1, 19):
+                    Table.create(number_table=i)
     except InternalError as pw:
         logging.error(pw)
 
 
-db_beahea = MySQLDatabase('j10277899_whitestar',
-                          register_hstore=True,
+db_beahea = MySQLDatabase(DB_NAME,
                           user=DB_LOGIN,
                           password=DB_PASSWORD,
-                          host='mysql.32b20e713c92.hosting.myjino.ru/',
-                          port='3306')
+                          host=DB_HOST,
+                          port=int(DB_PORT))
+
+
+# db_beahea = SqliteDatabase('./db_db')
 
 
 class BaseUserModel(Model):
     class Meta:
         database = db_beahea
         order_by = 'id'
+
+
+class Gender(BaseUserModel):
+    id = PrimaryKeyField(unique=True)
+    name = CharField(unique=True)
+    symbol = CharField(unique=True)
+
+    class Meta:
+        db_table = "gender"
 
 
 class User(BaseUserModel):
@@ -69,12 +89,17 @@ class User(BaseUserModel):
 
     phone = CharField(null=True)
     name = CharField(max_length=63, null=True)
-    gender = CharField(null=True)
+    gender = ForeignKeyField(Gender, null=True)
     date_birth = DateTimeField(null=True)
     username = CharField(max_length=63, null=True)
 
     class Meta:
         db_table = "user"
+
+
+class Admin(BaseUserModel):
+    id = PrimaryKeyField(unique=True)
+    user_id = CharField(unique=True)
 
 
 class Event(BaseUserModel):
@@ -108,13 +133,27 @@ class Table(BaseUserModel):
 
 class TableReservationHistory(BaseUserModel):
     id = PrimaryKeyField(unique=True)
-    user = ForeignKeyField(User, backref='user')
-    table = ForeignKeyField(Table, backref='table')
+    user = ForeignKeyField(User, backref='user', null=True)
+    table = ForeignKeyField(Table, backref='table', null=True)
     event = ForeignKeyField(Event, backref='event', null=True)
-    creation_time = DateTimeField(default=datetime.datetime.now)
-    booking_start_time = DateTimeField()
-    booking_end_time = DateTimeField()
-    number_of_guests = IntegerField()
+    creation_time = DateTimeField(default=datetime.datetime.now())
+    booking_start_time = DateTimeField(null=True)
+    booking_end_time = DateTimeField(null=True)
+    number_of_guests = IntegerField(null=True)
+    phone_number = CharField(null=True)
 
     class Meta:
         db_table = 'table_reservation_history'
+
+
+class PartyReservationHistory(BaseUserModel):
+    id = PrimaryKeyField(unique=True)
+    user = ForeignKeyField(User, backref='user', null=True)
+    tables_list = CharField(null=True)
+    creation_time = DateTimeField(default=datetime.datetime.now())
+    booking_start_time = DateTimeField(null=True)
+    booking_end_time = DateTimeField(null=True)
+    number_of_guests = IntegerField(null=True)
+
+    class Meta:
+        db_table = 'party_reservation_history'

@@ -30,7 +30,7 @@ from aiogram.utils.chat_action import ChatActionMiddleware
 from data import models_peewee
 from config.config import BOT_TOKEN
 
-from handlers import main_menu_handlers, table_reservations_handlers
+from handlers import main_menu_handlers, table_reservations_handlers, admin_menu_handlers, user_profile_handlers
 
 
 async def main():
@@ -42,6 +42,8 @@ async def main():
 
     dp.include_router(main_menu_handlers.router)
     dp.include_router(table_reservations_handlers.router)
+    dp.include_router(admin_menu_handlers.router)
+    dp.include_router(user_profile_handlers.router)
 
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
