@@ -1,10 +1,8 @@
 import re
 
-from peewee import DateTimeField
-
 from data import models_peewee
-from data.models_peewee import db_beahea, Gender
-from data.texts import text_user_profile
+from data.models_peewee import Gender
+from data.texts import text_user_profile, text_admin_navigator
 
 
 def text_buttons_profile(user_data: models_peewee.BaseUserModel) -> dict:
@@ -16,29 +14,7 @@ def text_buttons_profile(user_data: models_peewee.BaseUserModel) -> dict:
     """
 
     user_data_dict = user_data.__dict__['__data__']
-    gender_id = user_data.gender
-    genders_id = [gender.id for gender in Gender.select(Gender.id)]
-    if gender_id == None:
-        user_data_dict['gender'] = 'Пол'
-    elif gender_id.id in genders_id:
-        with db_beahea:
-            gender = Gender.get(Gender.id == user_data.gender)
-            gender_symbol = gender.symbol
-            user_data_dict['gender'] = gender_symbol
-
-    if user_data.name == None:
-        user_data_dict['name'] = 'Имя'
-
-    if user_data.surname == None:
-        user_data_dict['surname'] = 'Фамилия'
-
-    if user_data.date_birth == None:
-        user_data_dict['date_birth'] = 'Дата рождения'
-
-    if user_data.phone == None:
-        user_data_dict['phone'] = 'Телефон'
-
-    return user_data_dict
+    pass
 
 
 def check_data_func(key: str | int, mess: str) -> [bool, str]:
@@ -56,7 +32,7 @@ def check_data_func(key: str | int, mess: str) -> [bool, str]:
             return (False,
                     text_user_profile.err_basic_data_update[key])
     elif key == 'date_birth':
-        return (checking_data_expression(date_birth=mess),
+        return (checking_data_expression(date=mess),
                 text_user_profile.err_basic_data_update[key])
     elif key == 'phone':
         return (checking_data_expression(phone_number=mess),
@@ -75,7 +51,6 @@ def check_data_func(key: str | int, mess: str) -> [bool, str]:
 
 def checking_data_expression(phone_number: str | bool = False,
                              email: str | bool = False,
-                             date_birth: str | bool = False,
                              time: str | bool = False,
                              date: str | bool = False,
                              number_of_guests: str | bool = False) -> bool:
@@ -90,16 +65,15 @@ def checking_data_expression(phone_number: str | bool = False,
     :param time: Время
     :param phone_number: Номер телефона пользователя
     :param email: Адрес электронной почты пользователя
-    :param date_birth: Дата рождения пользователя
 
     :return: Сравнивает и возвращает True или False
     """
 
     expressions_dir = {
-        'date_birth':
-            r'(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)\d\d',
+        'date':
+            r'(0[1-9]|[12][0-9]|3[01])[- /.,;:](0[1-9]|1[012])[- /.,;:](19|20)\d\d',
         'time':
-            r'^([0-1]?[0-9]|2[0-3])[:.- ][0-5][0-9]',
+            r'^([0-1]?[0-9]|2[0-3])[:;.-/, ][0-5][0-9]',
         'number_of_guests':
             r'[0-9]?[0-9]',
         'phone_number':
@@ -112,10 +86,7 @@ def checking_data_expression(phone_number: str | bool = False,
     expression = ''
     data = ''
 
-    if date_birth:
-        expression = expressions_dir["date_birth"]
-        data = date_birth
-    elif phone_number:
+    if phone_number:
         expression = expressions_dir["phone_number"]
         data = phone_number
     elif email:
@@ -139,15 +110,33 @@ def checking_data_expression(phone_number: str | bool = False,
         return False
 
 
-def correction_phone_number(phone_number: str) -> str:
-    nums = ''.join(re.findall(r'\b\d+\b', phone_number))
-    print(nums)
-    if nums[0] == '7':
-        nums = '+' + nums
-    elif nums[0] == '8':
-        nums = '+7' + nums.lstrip('8')
-    elif nums[0] == '9':
-        nums = '+7' + nums
-    return nums
+def correction_datas(phone_number: str = None,
+                     date: str = None,
+                     time: str = None) -> str:
+    if phone_number:
+        ans = ''.join(re.findall(r'\b\d+\b', phone_number))
+        if ans[0] == '7':
+            ans = '+' + ans
+        elif ans[0] == '8':
+            ans = '+7' + ans.lstrip('8')
+        elif ans[0] == '9':
+            ans = '+7' + ans
+        return ans
+    elif date:
+        ans = (re.findall(r'\b\d+\b', date))
+        if len(ans[-1]) > len(ans[0]):
+            ans[0], ans[-1] = ans[-1], ans[0]
+        ans = '-'.join(ans)
+        return ans
+    elif time:
+        ans = ':'.join(re.findall(r'\b\d+\b', time))
+        return ans
 
 
+def admin_checking_table_reservations(datas: dict) -> str:
+    answer = text_admin_navigator.admin_add_party_reservations_confirmation_enter_data
+    answer += (f'\nНомер стола: {datas['table']}\n'
+               f'Количество гостей: {datas['number_of_guests']}\n'
+               f'Дата и время резерва: {datas['booking_start_time']}\n'
+               f'Телефон: {datas['phone_number']}\n\n')
+    return answer

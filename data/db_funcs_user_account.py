@@ -7,7 +7,8 @@ from config.config import ADMIN_DIMA
 
 
 def check_user_datas(user_id: int) -> bool:
-    """Проверка БД на наличие пользователя
+    """
+    Проверка БД на наличие пользователя
 
     :param user_id: ID пользователя
     :return: True если юзера есть в БД, иначе False

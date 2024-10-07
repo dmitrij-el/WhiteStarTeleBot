@@ -26,6 +26,7 @@ class StateAdminMenu(StatesGroup):
     admin_add_table_reservations_booking_start_time_date = State()
     admin_add_table_reservations_booking_start_time_time = State()
     admin_add_table_reservations_number_of_guests = State()
+    admin_add_table_reservations_confirmation_enter_data = State()
     admin_delete_table_reservations = State()
 
     admin_party_reservations = State()

@@ -5,7 +5,7 @@ from aiogram.types import (
 from data.db_funcs_user_account import check_admin
 
 
-def adm_main_menu(user_id: int) -> ReplyKeyboardMarkup:
+def admin_main_menu(user_id: int) -> ReplyKeyboardMarkup:
     if check_admin(user_id=user_id):
         menu_buttons = [
             [KeyboardButton(text="Добавить/удалить забронированные столы"),
@@ -22,31 +22,30 @@ def adm_main_menu(user_id: int) -> ReplyKeyboardMarkup:
     return menu_keyboard
 
 
-
-def adm_cancel(user_id: int) -> ReplyKeyboardMarkup:
+def admin_cancel(user_id: int) -> ReplyKeyboardMarkup:
     if check_admin(user_id=user_id):
         adm_cancel_buttons = [[KeyboardButton(text="Отмена")]]
     else:
         adm_cancel_buttons = [[KeyboardButton(text="Главное меню")]]
     adm_cancel_keyboard = ReplyKeyboardMarkup(keyboard=adm_cancel_buttons,
-                                          resize_keyboard=True,
-                                          input_field_placeholder='Очистить аккаунт?')
+                                              resize_keyboard=True,
+                                              input_field_placeholder='Убедитесь в правильности ввода.')
     return adm_cancel_keyboard
 
 
-def adm_yes_no(user_id: int) -> ReplyKeyboardMarkup:
+def admin_yes_no(user_id: int) -> ReplyKeyboardMarkup:
     if check_admin(user_id=user_id):
         adm_yes_no_buttons = [[KeyboardButton(text="Да"),
-                           KeyboardButton(text="Нет")]]
+                               KeyboardButton(text="Нет")]]
     else:
         adm_yes_no_buttons = [[KeyboardButton(text="Главное меню")]]
     adm_yes_no_keyboard = ReplyKeyboardMarkup(keyboard=adm_yes_no_buttons,
-                                          resize_keyboard=True,
-                                          input_field_placeholder='Очистить аккаунт?')
+                                              resize_keyboard=True,
+                                              input_field_placeholder='Выберите соответствующую кнопку.')
     return adm_yes_no_keyboard
 
 
-def adm_admin_menu(user_id: int) -> ReplyKeyboardMarkup:
+def admin_admin_menu(user_id: int) -> ReplyKeyboardMarkup:
     if check_admin(user_id=user_id):
         adm_admin_menu_buttons = [
             [KeyboardButton(text="Добавить администратора"),
@@ -61,7 +60,7 @@ def adm_admin_menu(user_id: int) -> ReplyKeyboardMarkup:
     return adm_admin_menu_keyboard
 
 
-def adm_table_reservations_menu(user_id: int) -> ReplyKeyboardMarkup:
+def admin_table_reservations_menu(user_id: int) -> ReplyKeyboardMarkup:
     if check_admin(user_id=user_id):
         adm_table_reservations_menu_buttons = [
             [KeyboardButton(text="Добавить бронь стола"),
@@ -76,7 +75,7 @@ def adm_table_reservations_menu(user_id: int) -> ReplyKeyboardMarkup:
     return adm_table_reservations_menu_keyboard
 
 
-def adm_party_reservations_menu(user_id: int) -> ReplyKeyboardMarkup:
+def admin_party_reservations_menu(user_id: int) -> ReplyKeyboardMarkup:
     if check_admin(user_id=user_id):
         adm_party_reservations_menu_buttons = [
             [KeyboardButton(text="Добавить бронь корпоратива"),
@@ -91,7 +90,7 @@ def adm_party_reservations_menu(user_id: int) -> ReplyKeyboardMarkup:
     return adm_party_reservations_menu_keyboard
 
 
-def adm_event_menu(user_id: int) -> ReplyKeyboardMarkup:
+def admin_event_menu(user_id: int) -> ReplyKeyboardMarkup:
     if check_admin(user_id=user_id):
         adm_event_menu_buttons = [
             [KeyboardButton(text="Добавить мероприятие"),

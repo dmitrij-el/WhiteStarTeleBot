@@ -54,6 +54,7 @@ async def handler_start(msg: Message, state: FSMContext):
 @router.message(Command('main_menu'))
 @router.message(F.text.lower().in_({"выйти в меню", "главное меню", 'главное меню'}))
 async def main_menu(msg: Message, state: FSMContext):
+    await state.clear()
     user_id = msg.from_user.id
     await msg.answer(text=text_navigator.main_menu, reply_markup=kb_main_menu.main_menu(user_id=user_id))
     await state.set_state(StateMenu.main_menu)
@@ -61,11 +62,12 @@ async def main_menu(msg: Message, state: FSMContext):
 
 @router.message(StateMenu.main_menu)
 async def main_menu(msg: Message, state: FSMContext):
+    user_id = msg.from_user.id
     prompt = msg.text
     if prompt == "Меню администратора":
         if check_admin(msg.from_user.id):
             await msg.answer(text_admin_navigator.admin_main_menu,
-                             reply_markup=kb_admin_menu.adm_main_menu(user_id=msg.from_user.id))
+                             reply_markup=kb_admin_menu.admin_main_menu(user_id=user_id))
             await state.set_state(StateAdminMenu.admin_main_menu)
         else:
             await msg.answer(text=text_admin_navigator.err_admin_access_rights,

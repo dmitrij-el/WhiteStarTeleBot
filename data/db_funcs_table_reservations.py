@@ -45,3 +45,19 @@ def load_table_reservations(date: datetime = None) -> str:
                       f'Ошибка: {exp}')
         return f'В процессе загрузки резервов столов произошла непредвиденная ошибка\nОшибка: {exp}'
 
+
+
+
+
+def reservation_rec_datas(acc_dict: dict) -> None:
+    """Запись данных при бронировании
+
+    :param acc_dict: Данные
+    :return: None
+    """
+    try:
+        with db_beahea.atomic():
+            User.create(**acc_dict)
+    except Exception as exp:
+        logging.error(f'В процессе записи пользователя {acc_dict["user_id"]} в БД произошла непредвиденная ошибка\n'
+                      f'Ошибка: {exp}')
