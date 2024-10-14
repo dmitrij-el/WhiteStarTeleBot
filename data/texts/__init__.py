@@ -1,1 +1,1 @@
-from . import text_user_profile, text_event, text_navigator, text_table_reservation, text_admin_navigator
+from . import text_user_profile, text_event, text_navigator, text_reservation, text_admin_navigator

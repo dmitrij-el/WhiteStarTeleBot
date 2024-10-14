@@ -46,21 +46,6 @@ def admin_yes_no(user_id: int) -> ReplyKeyboardMarkup:
     return adm_yes_no_keyboard
 
 
-def admin_admin_menu(user_id: int) -> ReplyKeyboardMarkup:
-    if check_admin(user_id=user_id):
-        adm_admin_menu_buttons = [
-            [KeyboardButton(text="Добавить администратора"),
-             KeyboardButton(text="Удалить администратора")],
-            [KeyboardButton(text="Назад")]
-        ]
-    else:
-        adm_admin_menu_buttons = [[KeyboardButton(text="Главное меню")]]
-    adm_admin_menu_keyboard = ReplyKeyboardMarkup(keyboard=adm_admin_menu_buttons,
-                                                  resize_keyboard=True,
-                                                  input_field_placeholder='Выберите соответствующую кнопку.')
-    return adm_admin_menu_keyboard
-
-
 def admin_table_reservations_menu(user_id: int) -> ReplyKeyboardMarkup:
     if check_admin(user_id=user_id):
         adm_table_reservations_menu_buttons = [
@@ -140,7 +125,7 @@ def admin_weekday_enter(user_id: int) -> ReplyKeyboardMarkup:
     admin_weekday_enter_keyboard = ReplyKeyboardMarkup(keyboard=admin_weekday_enter_buttons,
                                                        resize_keyboard=True,
                                                        input_field_placeholder='Выберите соответствующую '
-                                                                                 'кнопку.')
+                                                                               'кнопку.')
     return admin_weekday_enter_keyboard
 
 

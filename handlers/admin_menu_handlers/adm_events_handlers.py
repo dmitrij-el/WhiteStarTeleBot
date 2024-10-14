@@ -251,14 +251,15 @@ async def admin_delete_events(msg: Message, state: FSMContext):
                 check_date = Event.select().where(PartyReservationHistory.id == int(prompt))
                 if check_date:
                     check_date.get().delete_instance()
-                    answer = await db_funcs_admin_menu.load_party_reservations()
+                    answer = await db_funcs_admin_menu.load_events()
                     for ans in answer:
-                        await msg.answer(text=ans,
-                                         reply_markup=kb_admin_menu.admin_party_reservations_menu(user_id=user_id))
-                    await state.set_state(StateAdminMenu.admin_party_reservations)
+                        await msg.answer(text=ans)
+                    await msg.answer(text=text_admin_navigator.admin_events,
+                                     reply_markup=kb_admin_menu.admin_party_reservations_menu(user_id=user_id))
+                    await state.set_state(StateAdminMenu.admin_events)
                 else:
                     await msg.answer(text=text_admin_navigator.err_error
-                                          + text_admin_navigator.admin_delete_party_reservations,
+                                          + text_admin_navigator.admin_delete_events,
                                      reply_markup=kb_admin_menu.admin_cancel(user_id=user_id))
                     await state.set_state(StateAdminMenu.admin_delete_events)
     else:

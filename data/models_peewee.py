@@ -101,7 +101,6 @@ class User(BaseUserModel):
 class Admin(BaseUserModel):
     id = PrimaryKeyField(unique=True)
     user_id = CharField(null=True)
-    username = CharField(null=True)
 
     class Meta:
         db_table = "admin"

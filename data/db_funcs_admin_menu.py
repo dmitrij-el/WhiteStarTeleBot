@@ -164,3 +164,41 @@ async def load_events(date: datetime = None) -> list:
         logging.error(f'В процессе загрузки мероприятий произошла непредвиденная ошибка\n'
                       f'Ошибка: {exp}')
         return ['В процессе загрузки мероприятий произошла непредвиденная ошибка\n']
+
+
+async def load_admin_list():
+    try:
+        datas = Admin.select()
+        if datas:
+            answer = []
+            for data in datas:
+                answer.append('')
+                id = data.id
+                user_id = data.user_id
+                answer[-1] += f'ID записи: {id}'
+                answer[-1] += f'\nID пользователя: {user_id}'
+                user = User.select().where(User.user_id == user_id)
+                if user:
+                    user = user.get()
+                    answer[-1] += f'\nДанные о {user.name}'
+                    answer[-1] += f'\nНик: @{user.username}'
+                    gender = user.gender
+                    date_birth = user.date_birth
+                    phone = user.phone
+                    if phone is not None:
+                        answer[-1] += f'\nТелефон: {phone}'
+                    if gender is not None:
+                        answer[-1] += f'\nПол: {user.gender.symbol}'
+                    if date_birth is not None:
+                        date_birth = date_birth.date()
+                        answer[-1] += f'\nДень рождения: {date_birth}'
+            if len(answer) != 0:
+                return answer
+            else:
+                return ['Администраторов не найдено.']
+        else:
+            return ['Администраторов не найдено.']
+    except Exception as exp:
+        logging.error(f'В процессе загрузки списка администраторов произошла непредвиденная ошибка\n'
+                      f'Ошибка: {exp}')
+        return ['В процессе загрузки списка администраторов произошла непредвиденная ошибка\n']

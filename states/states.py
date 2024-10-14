@@ -57,6 +57,20 @@ class StateAdminMenu(StatesGroup):
 
 class StateTableReservations(StatesGroup):
     main_table_reservations = State()
+    add_table_reservations_phone = State()
+    add_table_reservations_booking_start_time_date = State()
+    add_table_reservations_booking_start_time_time = State()
+    add_table_reservations_table = State()
+    add_table_reservations_number_of_guests = State()
+    add_table_reservations_confirmation_enter_data = State()
+
+class StatePartyReservations(StatesGroup):
+    main_party_reservations = State()
+    add_party_reservations_phone = State()
+    add_party_reservations_booking_start_time_date = State()
+    add_party_reservations_booking_start_time_time = State()
+    add_party_reservations_number_of_guests = State()
+    add_party_reservations_confirmation_enter_data = State()
 
 
 class StateInfoEvents(StatesGroup):
@@ -69,5 +83,3 @@ class StateUserProfile(StatesGroup):
     gender = State()
     phone = State()
     clear_profile = State()
-
-

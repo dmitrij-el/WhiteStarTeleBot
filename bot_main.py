@@ -47,7 +47,7 @@ async def main():
     dp.message.middleware(ChatActionMiddleware())
 
     dp.include_router(main_menu_handlers.router)
-    dp.include_router(table_reservations_handlers.router)
+    # dp.include_router(table_reservations_handlers.router)
     dp.include_router(user_profile_handlers.router)
 
     dp.include_router(adm_admin_list_handlers.router)
