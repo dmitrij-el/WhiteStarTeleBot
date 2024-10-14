@@ -1,58 +1,13 @@
 import re
 
-from data import models_peewee
-from data.models_peewee import Gender
-from data.texts import text_user_profile, text_admin_navigator
-
-
-def text_buttons_profile(user_data: models_peewee.BaseUserModel) -> dict:
-    """
-    Функция для формирования текстового интерфейса клавиатуры в меню профиля
-
-    :param user_data: Вводные данные из базы данных
-    :return: Текстовый интерфейс клавиатуры в меню
-    """
-
-    user_data_dict = user_data.__dict__['__data__']
-    pass
-
-
-def check_data_func(key: str | int, mess: str) -> [bool, str]:
-    """
-    Функция проверки ввода данных аккаунта
-
-    :param key: Название метода проверки
-    
-    :param mess: Текстовое сообщение для проверки на соответствие
-
-    :return: Объект с информацией о результате проверки
-    """
-    if key in ['name', 'surname']:
-        if len(mess) > 63:
-            return (False,
-                    text_user_profile.err_basic_data_update[key])
-    elif key == 'date_birth':
-        return (checking_data_expression(date=mess),
-                text_user_profile.err_basic_data_update[key])
-    elif key == 'phone':
-        return (checking_data_expression(phone_number=mess),
-                text_user_profile.err_basic_data_update[key])
-    elif key == 'gender':
-        ans_list = [[i.name, i.symbol] for i in Gender.select(Gender.name, Gender.symbol)]
-        answer_list = []
-        for ans in ans_list:
-            for i in ans:
-                answer_list.append(i)
-        if not mess.title() in answer_list:
-            return (False,
-                    text_user_profile.err_basic_data_update[key])
-    return True, text_user_profile.update_account_true
+from data.models_peewee import User
+from data.texts import text_admin_navigator
 
 
 def checking_data_expression(phone_number: str | bool = False,
                              email: str | bool = False,
                              time: str | bool = False,
-                             date: str | bool = False,
+                             date_day: str | bool = False,
                              number_of_guests: str | bool = False) -> bool:
     """
     Проверка данных с помощью регулярных выражений. Выберите переменную из списка\n
@@ -61,7 +16,7 @@ def checking_data_expression(phone_number: str | bool = False,
     Имени пользователя: user_name
 
     :param number_of_guests: Количество гостей
-    :param date: Дата
+    :param date_day: Дата
     :param time: Время
     :param phone_number: Номер телефона пользователя
     :param email: Адрес электронной почты пользователя
@@ -71,7 +26,7 @@ def checking_data_expression(phone_number: str | bool = False,
 
     expressions_dir = {
         'date':
-            r'(0[1-9]|[12][0-9]|3[01])[- /.,;:](0[1-9]|1[012])[- /.,;:](19|20)\d\d',
+            r'(19|20)\d\d[- /.,;:](0[1-9]|1[012])[- /.,;:](0[1-9]|[12][0-9]|3[01])',
         'time':
             r'^([0-1]?[0-9]|2[0-3])[:;.-/, ][0-5][0-9]',
         'number_of_guests':
@@ -95,9 +50,9 @@ def checking_data_expression(phone_number: str | bool = False,
     elif time:
         expression = expressions_dir["time"]
         data = time
-    elif date:
+    elif date_day:
         expression = expressions_dir["date"]
-        data = date
+        data = date_day
     elif number_of_guests:
         expression = expressions_dir["number_of_guests"]
         data = number_of_guests
@@ -111,7 +66,7 @@ def checking_data_expression(phone_number: str | bool = False,
 
 
 def correction_datas(phone_number: str = None,
-                     date: str = None,
+                     date_day: str = None,
                      time: str = None) -> str:
     if phone_number:
         ans = ''.join(re.findall(r'\b\d+\b', phone_number))
@@ -122,8 +77,8 @@ def correction_datas(phone_number: str = None,
         elif ans[0] == '9':
             ans = '+7' + ans
         return ans
-    elif date:
-        ans = (re.findall(r'\b\d+\b', date))
+    elif date_day:
+        ans = (re.findall(r'\b\d+\b', date_day))
         if len(ans[-1]) > len(ans[0]):
             ans[0], ans[-1] = ans[-1], ans[0]
         ans = '-'.join(ans)
@@ -133,10 +88,49 @@ def correction_datas(phone_number: str = None,
         return ans
 
 
-def admin_checking_table_reservations(datas: dict) -> str:
+def admin_checking_table_reservations(datas: dict) -> tuple[bool, str]:
+    answer = text_admin_navigator.admin_add_table_reservations_confirmation_enter_data
+    answer += (f'\nНомер стола: {datas['table']}'
+               f'\nКоличество гостей: {datas['number_of_guests']}'
+               f'\nДата и время резерва: {datas['booking_start_time']}'
+               f'\nТелефон: {datas['phone_number']}')
+    if datas.setdefault('name_user') is not None:
+        answer += f'\nИмя: {datas['name_user']}'
+    user = User.select().where(User.phone == datas['phone_number'])
+    if user:
+        user = user.get()
+        answer += f'\nДанные о {user.name}: @{user.username}'
+        gender = user.gender
+        date_birth = user.date_birth
+        if gender is not None:
+            answer += f', {user.gender.symbol}'
+        if date_birth is not None:
+            date_birth = date_birth.date()
+            answer += f', {date_birth}'
+        return True, answer
+    else:
+        return False, answer
+
+
+def admin_checking_party_reservations(datas: dict) -> tuple[bool, str]:
     answer = text_admin_navigator.admin_add_party_reservations_confirmation_enter_data
-    answer += (f'\nНомер стола: {datas['table']}\n'
-               f'Количество гостей: {datas['number_of_guests']}\n'
-               f'Дата и время резерва: {datas['booking_start_time']}\n'
-               f'Телефон: {datas['phone_number']}\n\n')
-    return answer
+    answer += (f'\nКорпоратив'
+               f'\nКоличество гостей: {datas['number_of_guests']}'
+               f'\nДата и время резерва: {datas['booking_start_time']}'
+               f'\nТелефон: {datas['phone_number']}')
+    if datas.setdefault('name_user') is not None:
+        answer += f'\nИмя: {datas['name_user']}'
+    user = User.select().where(User.phone == datas['phone_number'])
+    if user:
+        user = user.get()
+        answer += f'\nДанные о {user.name}: @{user.username}'
+        gender = user.gender
+        date_birth = user.date_birth
+        if gender is not None:
+            answer += f', {user.gender.symbol}'
+        if date_birth is not None:
+            date_birth = date_birth.date()
+            answer += f', {date_birth}'
+        return True, answer
+    else:
+        return False, answer

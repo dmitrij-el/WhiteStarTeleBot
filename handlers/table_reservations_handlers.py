@@ -13,5 +13,7 @@ router = Router()
 
 @router.message(StateTableReservations.main_table_reservations)
 async def menu(msg: Message, state: FSMContext):
-    await msg.answer(text_navigator.main_menu, reply_markup=kb_main_menu.main_menu())
+    user_id = msg.from_user.id
+    await msg.answer(text_navigator.main_menu, reply_markup=kb_main_menu.main_menu(user_id=user_id))
     await state.set_state(StateMenu.main_menu)
+

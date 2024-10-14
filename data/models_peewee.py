@@ -38,6 +38,7 @@ def create_models() -> None:
         Event.create_table()
         Table.create_table()
         TableReservationHistory.create_table()
+        PartyReservationHistory.create_table()
 
         with db_beahea.atomic():
             zona = Zona.select()
@@ -109,8 +110,10 @@ class Admin(BaseUserModel):
 class Event(BaseUserModel):
     id = PrimaryKeyField(unique=True)
     name_event = CharField()
-    description_event = CharField()
+    description_event = CharField(null=True)
+    media_event = CharField(null=True)
     creation_time = DateTimeField(default=datetime.datetime.now)
+    weekday = CharField(null=True)
     start_time_event = DateTimeField()
     end_time_event = DateTimeField()
 
@@ -145,6 +148,7 @@ class TableReservationHistory(BaseUserModel):
     booking_end_time = DateTimeField(null=True)
     number_of_guests = IntegerField(null=True)
     phone_number = CharField(null=True)
+    name_user = CharField(null=True)
 
     class Meta:
         db_table = 'table_reservation_history'
@@ -158,6 +162,9 @@ class PartyReservationHistory(BaseUserModel):
     booking_start_time = DateTimeField(null=True)
     booking_end_time = DateTimeField(null=True)
     number_of_guests = IntegerField(null=True)
+    phone_number = CharField(null=True)
+    name_user = CharField(null=True)
+
 
     class Meta:
         db_table = 'party_reservation_history'

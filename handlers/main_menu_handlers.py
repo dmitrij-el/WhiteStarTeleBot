@@ -129,13 +129,14 @@ async def send_help(msg: Message, state: FSMContext):
     await msg.answer(text="""
 /start - Запуск бота.
 /main_menu - Главное меню.
-/info_events - Расписание мероприятий
-/table_reservations - Забронировать стол
-/party_reservations - Забронировать корпоратив
-/menu_rest - Меню ресторана
+/info_events - Расписание мероприятий.
+/table_reservations - Забронировать стол.
+/party_reservations - Забронировать корпоратив.
+/menu_rest - Меню ресторана.
 /info_rest - Информация о ресторане.
-/profile - Данные профиля
-/help - Список команд
+/profile - Данные профиля.
+/help - Список команд.
 """,
                      reply_markup=kb_main_menu.main_menu(user_id=msg.from_user.id))
     await state.set_state(StateMenu.main_menu)
+
