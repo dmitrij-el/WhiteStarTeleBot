@@ -64,6 +64,7 @@ class StateTableReservations(StatesGroup):
     add_table_reservations_number_of_guests = State()
     add_table_reservations_confirmation_enter_data = State()
 
+
 class StatePartyReservations(StatesGroup):
     main_party_reservations = State()
     add_party_reservations_phone = State()

@@ -4,8 +4,11 @@ table_cancel_data_rec = 'Резерв стола отменен.'
 table_successful_data_rec = 'Стол успешно зарезервирован!'
 party_successful_data_rec = 'Заявка на резерв для мероприятия успешно принята. Скоро с Вами свяжутся!'
 
-table_reservation = "Стол №{table}\nКоличество персон{number_of_guests}\nВремя резерва{}"
-party_reservation = "Количество персон{number_of_guests}\nВремя резерва{}"
+table_reservation = ("Стол №<b><u>{table}</u></b>\n"
+                     "Количество персон: <b><u>{number_of_guests}</u></b>\n"
+                     "Время резерва: <b><u>{booking_start_time}</u></b>")
+party_reservation = ("Количество персон: <b><u>{number_of_guests}</u></b>\n"
+                     "Время резерва: <b><u>{booking_start_time}</u></b>")
 
 
 add_table_reservations_phone = 'Для бронирования стола необходимо указать номер телефона'

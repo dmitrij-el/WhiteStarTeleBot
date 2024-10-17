@@ -1,16 +1,10 @@
-import asyncio
-import json
 from datetime import datetime
 
 import logging
-from playhouse.shortcuts import model_to_dict
 
 from data.texts import text_admin_navigator
 from data.models_peewee import db_beahea
-from data.models_peewee import User, Admin, Table, TableReservationHistory, PartyReservationHistory, Event
-from config.config import ADMIN_DIMA
-
-
+from data.models_peewee import TableReservationHistory, PartyReservationHistory, Event
 
 
 async def load_events() -> list:
@@ -24,7 +18,6 @@ async def load_events() -> list:
                 answer = []
                 for data in datas:
                     answer.append('')
-                    id = data.id
                     name_event = data.name_event
                     start_time_event = data.start_time_event
                     end_time_event = data.end_time_event
@@ -47,3 +40,67 @@ async def load_events() -> list:
         logging.error(f'В процессе загрузки мероприятий произошла непредвиденная ошибка\n'
                       f'Ошибка: {exp}')
         return ['В процессе загрузки мероприятий произошла непредвиденная ошибка\n']
+
+
+async def load_table_reservations(user_id: int) -> list | None:
+    try:
+
+        datas = TableReservationHistory.select().where(TableReservationHistory.user.user_id == user_id and
+                                                       TableReservationHistory.booking_start_time.cast('date')
+                                                       >= datetime.now().date()
+                                                       ).order_by(TableReservationHistory.booking_start_time)
+        if datas:
+            answer = list()
+            for data in datas:
+                answer.append('')
+                reserve_id = data.id
+                table = data.table.number_table
+                number_of_guests = data.number_of_guests
+                phone = data.user.phone
+                booking_start_time = data.booking_start_time.strftime('%d-%m-%Y %H:%M')
+                answer[-1] += (f'\n\n<b><u>id резерва: {reserve_id}</u></b>'
+                               f'\nНомер стола: {table}'
+                               f'\nКоличество гостей: {number_of_guests}'
+                               f'\nДата и время резерва: {booking_start_time}')
+                answer[-1] += f'\nНомер телефона: {phone}'
+            if len(answer) != 0:
+                return answer
+            else:
+                return None
+        else:
+            return None
+    except Exception as exp:
+        logging.error(f'В процессе загрузки резервов столов произошла непредвиденная ошибка\n'
+                      f'Ошибка: {exp}')
+        return [f'В процессе загрузки резервов столов произошла непредвиденная ошибка\n']
+
+
+async def load_party_reservations(user_id: int) -> list | None:
+    try:
+
+        datas = PartyReservationHistory.select().where(PartyReservationHistory.user.user_id == user_id and
+                                                       PartyReservationHistory.booking_start_time.cast('date')
+                                                       >= datetime.now().date()
+                                                       ).order_by(PartyReservationHistory.booking_start_time)
+        if datas:
+            answer = list()
+            for data in datas:
+                answer.append('')
+                reserve_id = data.id
+                number_of_guests = data.number_of_guests
+                phone = data.user.phone
+                booking_start_time = data.booking_start_time.strftime('%d-%m-%Y %H:%M')
+                answer[-1] += (f'\n\n<b><u>id резерва: {reserve_id}</u></b>'
+                               f'\nКоличество гостей: {number_of_guests}'
+                               f'\nДата и время резерва: {booking_start_time}')
+                answer[-1] += f'\nНомер телефона: {phone}'
+            if len(answer) != 0:
+                return answer
+            else:
+                return None
+        else:
+            return None
+    except Exception as exp:
+        logging.error(f'В процессе загрузки резервов вечеринок произошла непредвиденная ошибка\n'
+                      f'Ошибка: {exp}')
+        return [f'В процессе загрузки вечеринок произошла непредвиденная ошибка\n']

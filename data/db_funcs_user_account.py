@@ -87,5 +87,3 @@ def check_admin(user_id: int):
         for id_adm in adm:
             admin_list.append(int(id_adm.user_id))
     return bool(user_id in admin_list)
-
-

@@ -22,7 +22,8 @@ import asyncio
 import locale
 import logging
 
-from aiogram import Bot, Dispatcher
+from aiogram import Bot, Dispatcher, F
+from aiogram.filters import Command
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums.parse_mode import ParseMode
 from aiogram_sqlite_storage.sqlitestore import SQLStorage
@@ -36,6 +37,7 @@ from handlers import (main_menu_handlers,
                       party_reservations_handlers,
                       user_profile_handlers,
                       event_handlers)
+
 from handlers.admin_menu_handlers import (adm_main_menu_handlers,
                                           adm_events_handlers,
                                           adm_party_reservations_handlers,
@@ -61,6 +63,42 @@ async def main():
     dp.include_router(adm_main_menu_handlers.router)
     dp.include_router(adm_table_reservations_handlers.router)
     dp.include_router(adm_party_reservations_handlers.router)
+
+    dp.message.register(main_menu_handlers.info_events,
+                        F.text.lower().in_({"расписание мероприятий", "календарь", "расписание"}))
+    dp.message.register(main_menu_handlers.info_events,
+                        Command('info_events'))
+
+    dp.message.register(main_menu_handlers.table_reservations,
+                        F.text.lower().in_({"забронировать стол", "стол"}))
+    dp.message.register(main_menu_handlers.table_reservations,
+                        Command('table_reservations'))
+
+    dp.message.register(main_menu_handlers.party_reservations,
+                        F.text.lower().in_({"забронировать корпоратив", "корпоратив", "party", "вечеринка"}))
+    dp.message.register(main_menu_handlers.party_reservations,
+                        Command('party_reservations'))
+
+    dp.message.register(main_menu_handlers.info_rest,
+                        F.text.lower().in_({"об whitestar", "whitestar"}))
+    dp.message.register(main_menu_handlers.info_rest,
+                        Command('info_rest'))
+
+    dp.message.register(main_menu_handlers.menu_rest,
+                        F.text.lower().in_({"меню", "еда", "ресторанное меню"}))
+    dp.message.register(main_menu_handlers.menu_rest,
+                        Command('menu_rest'))
+
+    dp.message.register(main_menu_handlers.user_profile,
+                        F.text.lower().in_({"профиль"}))
+    dp.message.register(main_menu_handlers.user_profile,
+                        Command('profile'))
+
+    dp.message.register(main_menu_handlers.send_help,
+                        F.text.lower().in_({"помощь", "help"}))
+    dp.message.register(main_menu_handlers.send_help,
+                        Command('help'))
+
 
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())

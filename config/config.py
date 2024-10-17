@@ -34,9 +34,3 @@ if DB_LOGIN is None:
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 if DB_PASSWORD is None:
     exit('DB_PASSWORD отсутствует в переменных окружения')
-
-API_HOST_RAPID_MICROSOFT_AZURE = "microsoft-translator-text.p.rapidapi.com"
-API_URL_GIPHY = ''
-API_URL_OPEN_WEATHER_DAY = 'https://api.openweathermap.org/data/2.5/weather'
-API_URL_OPEN_WEATHER_PERIOD = 'https://api.openweathermap.org/data/2.5/forecast'
-

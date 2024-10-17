@@ -3,11 +3,13 @@ from aiogram.types import Message
 from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
 
-from states.states import StateMenu, StateAdminMenu
-from keyboards import kb_main_menu, kb_admin_menu
-from data import db_funcs_user_account
-from data.texts import text_navigator, text_admin_navigator
+from data.models_peewee import User
+from states.states import StateMenu, StateAdminMenu, StateTableReservations, StatePartyReservations
+from keyboards import kb_main_menu, kb_admin_menu, kb_user_profile, kb_table_reservations
+from data import db_funcs_user_account, db_funcs_user_navigator
+from data.texts import text_navigator, text_admin_navigator, text_reservation, text_user_profile
 from data.db_funcs_user_account import check_admin
+from config.config import ADMIN_DIMA
 
 router = Router()
 
@@ -47,13 +49,12 @@ async def handler_start(msg: Message, state: FSMContext):
         else:
             await msg.answer(text=text_navigator.err_reg_fatal)
             prompt = msg.text
-            await msg.answer(text=prompt)
-            await state.set_state(StateMenu.main_menu)
+            await msg.send_message(chat_id=ADMIN_DIMA, text=prompt)
 
 
 @router.message(Command('main_menu'))
 @router.message(F.text.lower().in_({"выйти в меню", "главное меню", 'главное меню'}))
-async def main_menu(msg: Message, state: FSMContext):
+async def f_main_menu(msg: Message, state: FSMContext):
     await state.clear()
     user_id = msg.from_user.id
     await msg.answer(text=text_navigator.main_menu, reply_markup=kb_main_menu.main_menu(user_id=user_id))
@@ -75,31 +76,40 @@ async def main_menu(msg: Message, state: FSMContext):
             await state.set_state(StateMenu.main_menu)
 
 
-@router.message(Command('info_events'))
-@router.message(F.text.lower().in_({"расписание мероприятий", "календарь", "расписание"}))
-@router.message(F.text.in_({"🗓️ Расписание мероприятий"}))
 async def info_events(msg: Message, state: FSMContext):
-    await msg.answer(text='расписание мероприятий! надо проработать ответ',
-                     reply_markup=kb_main_menu.main_menu(user_id=msg.from_user.id))
+    user_id = msg.from_user.id
+    answer = await db_funcs_user_navigator.load_events()
+    for ans in answer:
+        await msg.answer(text=ans)
+    await msg.answer(text=text_navigator.main_menu,
+                     reply_markup=kb_main_menu.main_menu(user_id=user_id))
+    await state.set_state(StateMenu.main_menu)
 
 
-@router.message(Command('table_reservations'))
-@router.message(F.text.lower().in_({"забронировать стол", "стол"}))
-@router.message(F.text.in_({"⏸️ Забронировать стол"}))
 async def table_reservations(msg: Message, state: FSMContext):
-    await msg.answer(text='забронировать стол')
+    print('kkk')
+    user_id = msg.from_user.id
+    user = User.get(User.user_id == user_id)
+    if user.phone is None:
+        await msg.answer(
+            text=text_reservation.add_table_reservations_phone + '\n' + text_user_profile.basic_data_update['phone'],
+            reply_markup=kb_user_profile.choose_phone())
+        await state.set_state(StateTableReservations.add_table_reservations_phone)
+    else:
+        await msg.answer(text=text_reservation.add_party_reservations_booking_start_time_date,
+                         reply_markup=kb_table_reservations.date_enter())
+        await state.set_state(StateTableReservations.add_table_reservations_booking_start_time_date)
 
 
-@router.message(Command('party_reservations'))
-@router.message(F.text.lower().in_({"забронировать корпоратив", "корпоратив", "party", "вечеринка"}))
-@router.message(F.text.in_({"⏸️ Забронировать корпоратив"}))
-async def corporate_reservations(msg: Message, state: FSMContext):
-    await msg.answer(text='company party')
+async def party_reservations(msg: Message, state: FSMContext):
+    user_id = msg.from_user.id
+    answer = await db_funcs_user_navigator.load_table_reservations(user_id=user_id)
+    if answer is not None:
+        for ans in answer:
+            await msg.answer(text=ans)
+    await state.set_state(StatePartyReservations.main_party_reservations)
 
 
-@router.message(Command('info_rest'))
-@router.message(F.text.lower().in_({"об whitestar", "whitestar"}))
-@router.message(F.text.in_({"⭐ Об WhiteStar"}))
 async def info_rest(msg: Message, state: FSMContext):
     await msg.answer(text='О white Star',
                      reply_markup=kb_main_menu.main_menu(user_id=msg.from_user.id))
@@ -107,23 +117,16 @@ async def info_rest(msg: Message, state: FSMContext):
     await msg.answer(text='https://yandex.ru/maps/-/CDTf4UnL')
 
 
-@router.message(Command('menu_rest'))
-@router.message(F.text.lower().in_({"меню", "еда", "ресторанное меню"}))
 async def menu_rest(msg: Message, state: FSMContext):
     await msg.answer(text="https://wslounge.ru/menu",
                      reply_markup=kb_main_menu.main_menu(user_id=msg.from_user.id))
 
 
-@router.message(Command('profile'))
-@router.message(F.text.lower().in_({"профиль"}),
-                F.text.in_({"👤 Профиль"}))
 async def user_profile(msg: Message, state: FSMContext):
     await msg.answer(text='Ваши данные',
                      reply_markup=kb_main_menu.main_menu(user_id=msg.from_user.id))
 
 
-@router.message(Command('help'))
-@router.message(F.text.lower().in_({"помощь", "help"}))
 async def send_help(msg: Message, state: FSMContext):
     await msg.answer(text="Вот список команд для использования")
     await msg.answer(text="""
@@ -139,4 +142,3 @@ async def send_help(msg: Message, state: FSMContext):
 """,
                      reply_markup=kb_main_menu.main_menu(user_id=msg.from_user.id))
     await state.set_state(StateMenu.main_menu)
-

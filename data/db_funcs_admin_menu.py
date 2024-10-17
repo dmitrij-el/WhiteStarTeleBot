@@ -1,15 +1,10 @@
-"""Набор функций для работы с базами данных"""
-import asyncio
-import json
 from datetime import datetime
 
 import logging
-from playhouse.shortcuts import model_to_dict
 
 from data.texts import text_admin_navigator
 from data.models_peewee import db_beahea
-from data.models_peewee import User, Admin, Table, TableReservationHistory, PartyReservationHistory, Event
-from config.config import ADMIN_DIMA
+from data.models_peewee import User, Admin, TableReservationHistory, PartyReservationHistory, Event
 
 
 async def load_table_reservations(date: datetime = None) -> list:
@@ -28,7 +23,7 @@ async def load_table_reservations(date: datetime = None) -> list:
                 cont_day = datetime
                 for data in datas:
                     user = data.user
-                    id = data.id
+                    reserve_id = data.id
                     table = data.table.number_table
                     number_of_guests = data.number_of_guests
                     booking_start_time = data.booking_start_time.strftime('%d-%m-%Y %H:%M')
@@ -36,7 +31,7 @@ async def load_table_reservations(date: datetime = None) -> list:
                         answer.append('')
                         cont_day = data.booking_start_time.strftime('%d-%m-%Y %A')
                         answer[-1] += f'\n\n<b><u>{cont_day}</u></b>'
-                    answer[-1] += (f'\n\nid резерва: {id}'
+                    answer[-1] += (f'\n\nid резерва: {reserve_id}'
                                    f'\nНомер стола: {table}'
                                    f'\nКоличество гостей: {number_of_guests}'
                                    f'\nДата и время резерва: {booking_start_time}')
@@ -85,7 +80,7 @@ async def load_party_reservations(date: datetime = None) -> list:
                 cont_day = datetime
                 for data in datas:
                     user = data.user
-                    id = data.id
+                    reserve_id = data.id
                     number_of_guests = data.number_of_guests
                     booking_start_time = data.booking_start_time.strftime('%d-%m-%Y %H:%M')
                     name_guest = data.name_user
@@ -93,7 +88,7 @@ async def load_party_reservations(date: datetime = None) -> list:
                         cont_day = data.booking_start_time.strftime('%d-%m-%Y %A')
                         answer.append('')
                         answer[-1] += f'\n\n<b><u>{cont_day}</u></b>'
-                    answer[-1] += (f'\n\nid резерва: {id}'
+                    answer[-1] += (f'\n\nid резерва: {reserve_id}'
                                    f'\nКоличество гостей: {number_of_guests}'
                                    f'\nДата и время резерва: {booking_start_time}')
                     if data.phone_number:
@@ -141,7 +136,7 @@ async def load_events(date: datetime = None) -> list:
                 answer = []
                 for data in datas:
                     answer.append('')
-                    id = data.id
+                    event_id = data.id
                     name_event = data.name_event
                     start_time_event = data.start_time_event
                     end_time_event = data.end_time_event
@@ -149,7 +144,7 @@ async def load_events(date: datetime = None) -> list:
                     weekday = ', '.join([key for key, value
                                          in text_admin_navigator.weekday_dicts.items() for day
                                          in data.weekday.split(',') if value == int(day)])
-                    answer[-1] += (f'\n\nid мероприятия: {id}'
+                    answer[-1] += (f'\n\nid мероприятия: {event_id}'
                                    f'\nНазвание мероприятия: {name_event}'
                                    f'\nДата старта мероприятия: {start_time_event}'
                                    f'\nДата конца мероприятия: {end_time_event}'
@@ -174,9 +169,9 @@ async def load_admin_list():
             answer = []
             for data in datas:
                 answer.append('')
-                id = data.id
+                admin_id = data.id
                 user_id = data.user_id
-                answer[-1] += f'ID записи: {id}'
+                answer[-1] += f'ID записи: {admin_id}'
                 answer[-1] += f'\nID пользователя: {user_id}'
                 user = User.select().where(User.user_id == user_id)
                 if user:

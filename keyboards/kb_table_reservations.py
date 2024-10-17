@@ -1,4 +1,4 @@
-from datetime import date, time, timedelta, datetime
+from datetime import date, timedelta, datetime
 from aiogram.types import (
     KeyboardButton,
     ReplyKeyboardMarkup
@@ -21,7 +21,7 @@ def date_enter(day_date: datetime = None, weeks_fnc: bool = False) -> ReplyKeybo
             date_date += timedelta(weeks=1)
         else:
             date_date += timedelta(days=1)
-        date_enter_buttons.append([KeyboardButton(text="Отмена")])
+    date_enter_buttons.append([KeyboardButton(text="Отмена")])
     date_enter_keyboard = ReplyKeyboardMarkup(keyboard=date_enter_buttons,
                                               resize_keyboard=True,
                                               input_field_placeholder='Убедитесь в правильности ввода.')

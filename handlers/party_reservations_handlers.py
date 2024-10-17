@@ -128,10 +128,9 @@ async def add_table_reservations_number_of_guests(msg: Message, state: FSMContex
             datas = await state.get_data()
             datas['number_of_guests'] = prompt
             await state.update_data(**datas)
-            await msg.answer(text=text_reservation.party_reservation.format(booking_start_time=
-                                                                            datas['booking_start_time'].
-                                                                            strftime('%d-%m-%Y %H:%M'),
-                                                                            number_of_guests=datas['number_of_guests']),
+            await msg.answer(text=text_reservation.party_reservation.format(
+                booking_start_time=datas['booking_start_time'].strftime('%d-%m-%Y %H:%M'),
+                number_of_guests=datas['number_of_guests']),
                              reply_markup=kb_table_reservations.yes_no())
             await state.set_state(StatePartyReservations.add_party_reservations_confirmation_enter_data)
         elif not check_date:

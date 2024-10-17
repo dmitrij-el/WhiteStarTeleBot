@@ -10,15 +10,10 @@ import logging
 
 from aiogram.types import (
     KeyboardButton,
-    InlineKeyboardMarkup,
-    InlineKeyboardButton,
-    ReplyKeyboardMarkup,
-    ReplyKeyboardRemove
+    ReplyKeyboardMarkup
 )
 
-from data import db_funcs_user_account
-from data.texts import text_navigator, text_user_profile
-from utils import easy_funcs
+from data.texts import text_user_profile
 from data.models_peewee import Gender, User, db_beahea
 
 
@@ -49,7 +44,6 @@ def user_profile_basic_data(user_id: int) -> ReplyKeyboardMarkup:
         print(type(user_data_dict))
         print(user_data_dict)
 
-        ### Здесь остановился. Надо переписать вывод клавиатуры.
         for key, value in user_data_dict.items():
             if type(value) is int:
                 user_data_dict[key] = str(value)

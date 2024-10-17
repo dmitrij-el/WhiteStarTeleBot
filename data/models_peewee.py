@@ -2,7 +2,7 @@ import datetime
 import logging
 
 from peewee import (CharField, DateTimeField, MySQLDatabase,
-                    IntegerField, BooleanField, ForeignKeyField, SqliteDatabase)
+                    IntegerField, BooleanField, ForeignKeyField)
 from peewee import Model, InternalError, PrimaryKeyField
 
 from config.config import DB_LOGIN, DB_PASSWORD, DB_HOST, DB_NAME, DB_PORT
@@ -164,8 +164,5 @@ class PartyReservationHistory(BaseUserModel):
     phone_number = CharField(null=True)
     name_user = CharField(null=True)
 
-
     class Meta:
         db_table = 'party_reservation_history'
-
-

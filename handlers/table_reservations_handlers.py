@@ -44,8 +44,11 @@ async def add_table_reservations_phone(msg: Message, state: FSMContext) -> None:
         check_phone = easy_funcs.checking_data_expression(phone_number=prompt)
         if check_phone:
             phone_number = easy_funcs.correction_datas(phone_number=prompt)
-            user = User.select().where(User.user_id == user_id)
-            user.insert(phone_number=phone_number).execute()
+            user = User.update(phone=phone_number).where(User.user_id == user_id)
+            user.execute()
+            await msg.answer(text=text_reservation.add_table_reservations_booking_start_time_date,
+                             reply_markup=kb_table_reservations.date_enter())
+            await state.set_state(StateTableReservations.add_table_reservations_booking_start_time_date)
         else:
             await msg.answer(text=text_user_profile.err_basic_data_update['phone'],
                              reply_markup=kb_main_menu.choose_phone())
@@ -167,11 +170,10 @@ async def add_table_reservations_number_of_guests(msg: Message, state: FSMContex
             datas = await state.get_data()
             datas['number_of_guests'] = prompt
             await state.update_data(**datas)
-            await msg.answer(text=text_reservation.table_reservation.format(table=datas['table'],
-                                                                            booking_start_time=
-                                                                            datas['booking_start_time'].
-                                                                            strftime('%d-%m-%Y %H:%M'),
-                                                                            number_of_guests=datas['number_of_guests']),
+            await msg.answer(text=text_reservation.table_reservation.format(
+                table=datas['table'],
+                booking_start_time=datas['booking_start_time'].strftime('%d-%m-%Y %H:%M'),
+                number_of_guests=datas['number_of_guests']),
                              reply_markup=kb_table_reservations.yes_no())
             await state.set_state(StateTableReservations.add_table_reservations_confirmation_enter_data)
         elif not check_date:
