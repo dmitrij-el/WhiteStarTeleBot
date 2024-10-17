@@ -142,6 +142,7 @@ async def load_events(date: datetime = None) -> list:
                 for data in datas:
                     answer.append('')
                     id = data.id
+                    name_event = data.name_event
                     start_time_event = data.start_time_event
                     end_time_event = data.end_time_event
                     description_event = data.description_event
@@ -149,7 +150,7 @@ async def load_events(date: datetime = None) -> list:
                                          in text_admin_navigator.weekday_dicts.items() for day
                                          in data.weekday.split(',') if value == int(day)])
                     answer[-1] += (f'\n\nid мероприятия: {id}'
-                                   f'\nНазвание мероприятия: {id}'
+                                   f'\nНазвание мероприятия: {name_event}'
                                    f'\nДата старта мероприятия: {start_time_event}'
                                    f'\nДата конца мероприятия: {end_time_event}'
                                    f'\nДни недели, проведения мероприятия: {weekday}'
