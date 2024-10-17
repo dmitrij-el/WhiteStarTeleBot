@@ -31,7 +31,11 @@ from aiogram.utils.chat_action import ChatActionMiddleware
 from data import models_peewee
 from config.config import BOT_TOKEN
 
-from handlers import main_menu_handlers, table_reservations_handlers, user_profile_handlers
+from handlers import (main_menu_handlers,
+                      table_reservations_handlers,
+                      party_reservations_handlers,
+                      user_profile_handlers,
+                      event_handlers)
 from handlers.admin_menu_handlers import (adm_main_menu_handlers,
                                           adm_events_handlers,
                                           adm_party_reservations_handlers,
@@ -47,8 +51,10 @@ async def main():
     dp.message.middleware(ChatActionMiddleware())
 
     dp.include_router(main_menu_handlers.router)
-    # dp.include_router(table_reservations_handlers.router)
     dp.include_router(user_profile_handlers.router)
+    dp.include_router(party_reservations_handlers.router)
+    dp.include_router(table_reservations_handlers.router)
+    dp.include_router(event_handlers.router)
 
     dp.include_router(adm_admin_list_handlers.router)
     dp.include_router(adm_events_handlers.router)

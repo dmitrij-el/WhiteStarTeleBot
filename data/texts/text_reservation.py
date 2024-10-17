@@ -1,3 +1,13 @@
+err_error = 'Ошибка! Данные не соответствуют!\n'
+error_data_rec = 'Ошибка записи, обратитесь в тех.поддержку'
+table_cancel_data_rec = 'Резерв стола отменен.'
+table_successful_data_rec = 'Стол успешно зарезервирован!'
+party_successful_data_rec = 'Заявка на резерв для мероприятия успешно принята. Скоро с Вами свяжутся!'
+
+table_reservation = "Стол №{table}\nКоличество персон{number_of_guests}\nВремя резерва{}"
+party_reservation = "\nКоличество персон{number_of_guests}\nВремя резерва{}"
+
+
 add_table_reservations_phone = 'Для бронирования стола необходимо указать номер телефона'
 add_table_reservations_table = 'Введите номер стола'
 add_table_reservations_err_table = 'Данный стол забронирован. Выберите пожалуйста другой стол.'
