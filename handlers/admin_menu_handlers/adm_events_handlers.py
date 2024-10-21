@@ -1,16 +1,20 @@
-from datetime import datetime, timedelta, date
+import asyncio
+from datetime import datetime
+from typing import Union, List
 
-from aiogram import Router
+from aiogram import Router, BaseMiddleware, types
+from aiogram.dispatcher.event.bases import CancelHandler
+from aiogram.enums import ContentType
 from aiogram.types import Message
-from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
+from aiogram.utils.media_group import MediaGroupBuilder
 
 from states.states import StateAdminMenu, StateMenu
 from keyboards import kb_main_menu, kb_admin_menu
 from data import db_funcs_admin_menu
 from data.texts import text_admin_navigator
 from data.db_funcs_user_account import check_admin
-from data.models_peewee import db_beahea, TableReservationHistory, Table, PartyReservationHistory, Event, Admin, User
+from data.models_peewee import db_beahea, PartyReservationHistory, Event
 from utils import easy_funcs
 
 router = Router()
@@ -161,10 +165,15 @@ async def admin_add_event_weekday(msg: Message, state: FSMContext):
             await state.clear()
             await state.set_state(StateAdminMenu.admin_main_menu)
         elif prompt == "Подтвердить":
-            await state.update_data(**datas)
-            await msg.answer(text=text_admin_navigator.admin_add_event_description,
-                             reply_markup=kb_admin_menu.admin_cancel(user_id=user_id))
-            await state.set_state(StateAdminMenu.admin_add_event_description)
+            if len(datas['weekday']) != 0:
+                await state.update_data(**datas)
+                await msg.answer(text=text_admin_navigator.admin_add_event_description,
+                                 reply_markup=kb_admin_menu.admin_cancel(user_id=user_id))
+                await state.set_state(StateAdminMenu.admin_add_event_description)
+            else:
+                await msg.answer(text=text_admin_navigator.admin_add_event_weekday,
+                                 reply_markup=kb_admin_menu.admin_weekday_enter(user_id=user_id))
+                await state.set_state(StateAdminMenu.admin_add_event_weekday)
         elif prompt in ["Вся неделя", "Будни", *text_admin_navigator.weekday_dicts.keys()]:
             if prompt == "Вся неделя":
                 datas['weekday'].extend([0, 1, 2, 3, 4, 5, 6])
@@ -178,9 +187,11 @@ async def admin_add_event_weekday(msg: Message, state: FSMContext):
                                  in text_admin_navigator.weekday_dicts.items() for day
                                  in datas['weekday'] if value == int(day)])
             if weekday:
-                await msg.answer(text=weekday)
-            await msg.answer(text=text_admin_navigator.admin_add_event_weekday,
-                             reply_markup=kb_admin_menu.admin_weekday_enter(user_id=user_id))
+                await msg.answer(text="Выбранные дни недели: " + weekday,
+                                 reply_markup=kb_admin_menu.admin_weekday_enter(user_id=user_id))
+            else:
+                await msg.answer(text=text_admin_navigator.admin_add_event_weekday,
+                                 reply_markup=kb_admin_menu.admin_weekday_enter(user_id=user_id))
             await state.set_state(StateAdminMenu.admin_add_event_weekday)
         else:
             await msg.answer(text=text_admin_navigator.err_error
@@ -208,7 +219,7 @@ async def name_event(msg: Message, state: FSMContext) -> None:
             datas['description_event'] = prompt
             await state.update_data(**datas)
             await msg.answer(text=text_admin_navigator.admin_add_event_media,
-                             reply_markup=kb_admin_menu.admin_cancel(user_id=user_id))
+                             reply_markup=kb_admin_menu.admin_load_or_cancel(user_id=user_id))
             await state.set_state(StateAdminMenu.admin_add_event_media)
     else:
         await msg.answer(text=text_admin_navigator.err_admin_access_rights,
@@ -226,29 +237,25 @@ async def name_event(msg: Message, state: FSMContext) -> None:
             await msg.answer(text=text_admin_navigator.admin_main_menu,
                              reply_markup=kb_admin_menu.admin_main_menu(user_id=user_id))
             await state.set_state(StateAdminMenu.admin_main_menu)
+        elif prompt == 'Загрузить':
+            datas = await state.get_data()
+            answer = easy_funcs.admin_checking_event(datas=datas)
+            await msg.answer(text=text_admin_navigator.admin_add_event_confirmation_enter_data,
+                             reply_markup=kb_admin_menu.admin_yes_no(user_id=user_id))
+            await msg.answer_media_group(media=answer.build())
+            await state.set_state(StateAdminMenu.admin_add_event_confirmation_enter_data)
         else:
             datas = await state.get_data()
             data = datas.setdefault('media_event')
             if data is None:
                 datas['media_event'] = list()
-            content_list = [msg.photo, msg.video, msg.document]
-            for content in content_list:
-                if content is not None:
-                    if msg.photo:
-                        datas['media_event'].append([content[-1].file_id, 'photo'])
-                        print('photo')
-                    elif msg.video:
-                        datas['media_event'].append([content[-1].file_id, 'video'])
-                    elif msg.document:
-                        datas['media_event'].append([content.file_id, 'document'])
-                        print('doc')
-            print(content_list)
-            print(datas['media_event'])
-
+            if msg.content_type == 'photo':
+                datas['media_event'].append([msg.photo[-1].file_id, 'photo'])
+            elif msg.content_type == 'video':
+                datas['media_event'].append([msg.video.file_id, 'video'])
+            elif msg.content_type == 'document':
+                datas['media_event'].append([msg.document.file_id, 'document'])
             await state.update_data(**datas)
-            await msg.answer(text=text_admin_navigator.admin_add_event_confirmation_enter_data,
-                             reply_markup=kb_admin_menu.admin_yes_no(user_id=user_id))
-            await state.set_state(StateAdminMenu.admin_add_event_confirmation_enter_data)
     else:
         await msg.answer(text=text_admin_navigator.err_admin_access_rights,
                          reply_markup=kb_main_menu.main_menu(user_id=user_id))
@@ -303,9 +310,9 @@ async def admin_delete_events(msg: Message, state: FSMContext):
             await state.set_state(StateAdminMenu.admin_main_menu)
         else:
             with db_beahea:
-                check_date = Event.select().where(PartyReservationHistory.id == int(prompt))
-                if check_date:
-                    check_date.get().delete_instance()
+                check_event = Event.select().where(Event.id == int(prompt))
+                if check_event:
+                    check_event.get().delete_instance()
                     answer = await db_funcs_admin_menu.load_events()
                     if type(answer) is str:
                         await msg.answer(text=answer)

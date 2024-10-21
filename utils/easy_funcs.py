@@ -1,5 +1,7 @@
 import re
 
+from aiogram.utils.media_group import MediaGroupBuilder
+
 from data.models_peewee import User
 from data.texts import text_admin_navigator
 
@@ -134,3 +136,26 @@ def admin_checking_party_reservations(datas: dict) -> tuple[bool, str]:
         return True, answer
     else:
         return False, answer
+
+
+def admin_checking_event(datas: dict) -> MediaGroupBuilder:
+    answer = ''
+    weekday = ', '.join([key for key, value
+                         in text_admin_navigator.weekday_dicts.items() for day
+                         in datas['weekday'] if value == int(day)])
+    answer += (f'\nНазвание мероприятия: <b>{datas['name_event']}</b>'
+               f'\nДата старта мероприятия: <b>{datas['start_time_event']}</b>'
+               f'\nДата конца мероприятия: <b>{datas['end_time_event']}</b>'
+               f'\nДни недели, проведения мероприятия: <b>{weekday}</b>'
+               f'\n<b>Описание:</b>\n{datas['description_event']}\n')
+    media_group = MediaGroupBuilder(caption=answer)
+    media_links = datas['media_event']
+    for media in media_links:
+        if media[1] == 'photo':
+            media_group.add_photo(media=media[0])
+        elif media[1] == 'video':
+            media_group.add_video(media=media[0])
+        elif media[1] == 'document':
+            media_group.add_document(media=media[0])
+
+    return media_group

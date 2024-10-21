@@ -34,6 +34,18 @@ def admin_cancel(user_id: int) -> ReplyKeyboardMarkup:
     return adm_cancel_keyboard
 
 
+def admin_load_or_cancel(user_id: int) -> ReplyKeyboardMarkup:
+    if check_admin(user_id=user_id):
+        admin_load_or_cancel_buttons = [[KeyboardButton(text="Загрузить"),
+                                         KeyboardButton(text="Отмена")]]
+    else:
+        admin_load_or_cancel_buttons = [[KeyboardButton(text="Главное меню")]]
+    admin_load_or_cancel_keyboard = ReplyKeyboardMarkup(keyboard=admin_load_or_cancel_buttons,
+                                              resize_keyboard=True,
+                                              input_field_placeholder='Убедитесь в правильности ввода.')
+    return admin_load_or_cancel_keyboard
+
+
 def admin_yes_no(user_id: int) -> ReplyKeyboardMarkup:
     if check_admin(user_id=user_id):
         adm_yes_no_buttons = [[KeyboardButton(text="Да"),

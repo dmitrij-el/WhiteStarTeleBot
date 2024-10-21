@@ -158,11 +158,11 @@ async def load_events(date: datetime = None) -> list | str:
                         media_links[i] = media_links[i].split(' | ')
                     for media in media_links:
                         if media[1] == 'photo':
-                            media_group.add_photo(type="photo", media=media[0])
+                            media_group.add_photo(media=media[0])
                         elif media[1] == 'video':
-                            media_group.add_video(type="video", media=media[0])
+                            media_group.add_video(media=media[0])
                         elif media[1] == 'document':
-                            media_group.add_document(type="document", media=media[0])
+                            media_group.add_document(media=media[0])
                     answer_list.append(media_group)
                 if len(answer_list) != 0:
                     return answer_list
