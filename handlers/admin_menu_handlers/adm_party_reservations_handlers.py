@@ -173,7 +173,7 @@ async def admin_add_party_reservations_phone(msg: Message, state: FSMContext) ->
                 if answer[0]:
                     await msg.answer(text=answer[1],
                                      reply_markup=kb_admin_menu.admin_yes_no(user_id=user_id))
-                    await state.set_state(StateAdminMenu.admin_add_table_reservations_confirmation_enter_data)
+                    await state.set_state(StateAdminMenu.admin_add_party_reservations_confirmation_enter_data)
                 else:
                     await msg.answer(text=text_admin_navigator.admin_add_party_reservations_guest_name,
                                      reply_markup=kb_admin_menu.admin_yes_no(user_id=user_id))

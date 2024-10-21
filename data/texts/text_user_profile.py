@@ -2,17 +2,17 @@ from data.models_peewee import User
 from states.states import StateUserProfile
 
 go_to_point_menu = 'В данном разделе хранятся все ваши данные. Для перехода выберите соответствующий пункт меню'
-account_menu_1 = 'Ваш профиль.',
-account_menu_2 = 'Для изменения нажмите на соответствующую кнопку.',
-account_qst_clear = 'У вас уже есть профиль, хотите его очистить?',
-account_rec_datas = 'Подождите, данные записываются.',
-clear_account_question = 'Хотите сбросить профиль?',
-clear_account_true = 'Аккаунт очищен.',
-clear_account_wait = 'Идет удаление аккаунта...',
-clear_account_cancel = 'Очистка аккаунта отменена.',
-update_profile_wait = 'Идет обновление данных...',
-update_account_true = 'Обновление данных прошло успешно.',
-update_account_false = 'При обновлении данных произошла ошибка.',
+account_menu_1 = 'Ваш профиль.'
+account_menu_2 = 'Для изменения нажмите на соответствующую кнопку.'
+account_qst_clear = 'У вас уже есть профиль, хотите его очистить?'
+account_rec_datas = 'Подождите, данные записываются.'
+clear_account_question = 'Хотите сбросить профиль?'
+clear_account_true = 'Аккаунт очищен.'
+clear_account_wait = 'Идет удаление аккаунта...'
+clear_account_cancel = 'Очистка аккаунта отменена.'
+update_profile_wait = 'Идет обновление данных...'
+update_account_true = 'Обновление данных прошло успешно.'
+update_account_false = 'При обновлении данных произошла ошибка.'
 update_profile_enter_data = 'Введите новые данные.'
 
 basic_data_menu = dict(

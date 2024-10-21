@@ -40,15 +40,11 @@ def time_enter(day_date: datetime = None) -> ReplyKeyboardMarkup:
     else:
         end_hours = 26
     hour = end_hours - start_hours
-    print(hour)
     num_line = (hour // 4)
-    print(num_line)
     if hour % 4 > 0:
         num_line += 1
-    print(num_line)
     time_enter_buttons = []
     for line in range(0, num_line):
-        print(line)
         time_enter_buttons.append([])
         for i in range(4):
             time_text = str(start_hours % 24) + ':00'

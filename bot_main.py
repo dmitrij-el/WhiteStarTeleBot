@@ -30,6 +30,7 @@ from aiogram_sqlite_storage.sqlitestore import SQLStorage
 from aiogram.utils.chat_action import ChatActionMiddleware
 
 from data import models_peewee
+from states.states import StateMenu
 from config.config import BOT_TOKEN
 
 from handlers import (main_menu_handlers,
@@ -93,6 +94,7 @@ async def main():
                         F.text.lower().in_({"профиль"}))
     dp.message.register(main_menu_handlers.user_profile,
                         Command('profile'))
+
 
     dp.message.register(main_menu_handlers.send_help,
                         F.text.lower().in_({"помощь", "help"}))

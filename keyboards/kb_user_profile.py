@@ -13,6 +13,7 @@ from aiogram.types import (
     ReplyKeyboardMarkup
 )
 
+import data.models_peewee
 from data.texts import text_user_profile
 from data.models_peewee import Gender, User, db_beahea
 
@@ -39,26 +40,23 @@ def user_profile_basic_data(user_id: int) -> ReplyKeyboardMarkup:
         user_profile_buttons = [
             [KeyboardButton(text="Что-то пошло не так, аккаунт не найден")]]
     else:
+        user = User.get(User.user_id == user_id)
+        from playhouse.shortcuts import model_to_dict
+        user_datas = model_to_dict(user)
         user_profile_buttons = [[], [], []]
-        user_data_dict = profile_basic_data.__dict__['__data__']
-        print(type(user_data_dict))
-        print(user_data_dict)
-
-        for key, value in user_data_dict.items():
-            if type(value) is int:
-                user_data_dict[key] = str(value)
-            if value is None:
-                user_data_dict[key] = text_user_profile.basic_data_menu[key]
+        for key in user_datas.keys():
+            if user_datas[key] is None:
+                user_datas[key] = text_user_profile.basic_data_menu[key]
             else:
                 if key == 'gender':
-                    gender = Gender.get(Gender.id == user_data_dict[key])
-                    user_data_dict['gender'] = gender.symbol
-
-        for key, value in user_data_dict.items():
-            if key in ['name', 'date_birth', 'gender']:
-                user_profile_buttons[0].append(KeyboardButton(text=user_data_dict[key]))
-            elif key in ['email', 'phone']:
-                user_profile_buttons[1].append(KeyboardButton(text=user_data_dict[key]))
+                    user_datas[key] = user_datas[key]['symbol']
+                elif key == 'date_birth':
+                    user_datas[key] = user_datas[key].strftime('%d.%m.%Y')
+        for key, value in user_datas.items():
+            if key in ['name', 'phone']:
+                user_profile_buttons[0].append(KeyboardButton(text=user_datas[key]))
+            elif key in ['date_birth', 'gender']:
+                user_profile_buttons[1].append(KeyboardButton(text=user_datas[key]))
         user_profile_buttons[2] = [KeyboardButton(text="Главное меню")]
     user_profile_keyboard = ReplyKeyboardMarkup(keyboard=user_profile_buttons,
                                                 resize_keyboard=True,
@@ -75,7 +73,7 @@ def back_button() -> ReplyKeyboardMarkup:
 
 def choose_phone() -> ReplyKeyboardMarkup:
     choose_phone_buttons = [[KeyboardButton(text="📞 Отправить телефон", request_contact=True),
-                             KeyboardButton(text="Отмена")]]
+                             KeyboardButton(text='Отмена')]]
     choose_phone_keyboard = ReplyKeyboardMarkup(keyboard=choose_phone_buttons,
                                                 resize_keyboard=True)
     return choose_phone_keyboard

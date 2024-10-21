@@ -37,15 +37,22 @@ async def add_table_reservations_phone(msg: Message, state: FSMContext) -> None:
     user_id = msg.from_user.id
     prompt = msg.text
     if prompt == 'Отмена':
+        await state.clear()
         await msg.answer(text=text_navigator.main_menu,
                          reply_markup=kb_main_menu.main_menu(user_id=user_id))
         await state.set_state(StateMenu.main_menu)
     else:
         check_phone = easy_funcs.checking_data_expression(phone_number=prompt)
         if check_phone:
+            datas = await state.get_data()
             phone_number = easy_funcs.correction_datas(phone_number=prompt)
-            user = User.select().where(User.user_id == user_id)
-            user.insert(phone_number=phone_number).execute()
+            user = User.update(phone=phone_number).where(User.user_id == user_id)
+            user.execute()
+            datas['phone_number'] = phone_number
+            await state.update_data(**datas)
+            await msg.answer(text=text_reservation.add_party_reservations_booking_start_time_date,
+                             reply_markup=kb_table_reservations.date_enter())
+            await state.set_state(StatePartyReservations.add_party_reservations_booking_start_time_date)
         else:
             await msg.answer(text=text_user_profile.err_basic_data_update['phone'],
                              reply_markup=kb_main_menu.choose_phone())
@@ -68,6 +75,8 @@ async def add_table_reservations_booking_start_time_date(msg: Message, state: FS
             datas = await state.get_data()
             cor_date = easy_funcs.correction_datas(date_day=prompt)
             if date.today() <= datetime.strptime(cor_date, '%Y-%m-%d').date():
+                datas['user_id'] = User.select().where(User.user_id == user_id).get().id
+                print(datas['user_id'])
                 datas['date'] = cor_date
                 await state.update_data(**datas)
                 date_datas = datetime.strptime(datas['date'], '%Y-%m-%d')
@@ -149,7 +158,7 @@ async def admin_add_table_reservations_confirmation_enter_data(msg: Message, sta
         try:
             with db_beahea.atomic():
                 PartyReservationHistory.create(**datas)
-            await msg.answer(text=text_reservation.table_successful_data_rec,
+            await msg.answer(text=text_reservation.party_successful_data_rec,
                              reply_markup=kb_main_menu.main_menu(user_id=user_id))
             await state.clear()
             await state.set_state(StateMenu.main_menu)
@@ -159,7 +168,7 @@ async def admin_add_table_reservations_confirmation_enter_data(msg: Message, sta
             await state.clear()
             await state.set_state(StateMenu.main_menu)
     elif prompt == 'Нет':
-        await msg.answer(text=text_reservation.table_cancel_data_rec,
+        await msg.answer(text=text_reservation.party_cancel_data_rec,
                          reply_markup=kb_main_menu.main_menu(user_id=user_id))
         await state.clear()
         await state.set_state(StateMenu.main_menu)

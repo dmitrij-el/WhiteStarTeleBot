@@ -4,6 +4,7 @@ from aiogram import Router
 from aiogram.types import Message
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
+from aiogram.utils.media_group import MediaGroupBuilder
 
 from states.states import StateAdminMenu, StateMenu
 from keyboards import kb_main_menu, kb_admin_menu
@@ -40,11 +41,17 @@ async def admin_main_menu(msg: Message, state: FSMContext) -> None:
             await state.set_state(StateAdminMenu.admin_party_reservations)
         elif prompt == "Мероприятия":
             answer = await db_funcs_admin_menu.load_events()
-            for ans in answer:
-                await msg.answer(text=ans)
-            await msg.answer(text=text_admin_navigator.admin_events,
-                             reply_markup=kb_admin_menu.admin_party_reservations_menu(user_id=user_id))
-            await state.set_state(StateAdminMenu.admin_events)
+            if type(answer) is str:
+                await msg.answer(text=answer)
+                await msg.answer(text=text_admin_navigator.admin_events,
+                                 reply_markup=kb_admin_menu.admin_party_reservations_menu(user_id=user_id))
+                await state.set_state(StateAdminMenu.admin_events)
+            else:
+                for ans in answer:
+                    await msg.answer_media_group(media=ans.build())
+                await msg.answer(text=text_admin_navigator.admin_events,
+                                 reply_markup=kb_admin_menu.admin_party_reservations_menu(user_id=user_id))
+                await state.set_state(StateAdminMenu.admin_events)
         elif prompt == "Администраторы":
             answer = await db_funcs_admin_menu.load_admin_list()
             for ans in answer:

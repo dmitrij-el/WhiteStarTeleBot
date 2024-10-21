@@ -1,11 +1,27 @@
 import datetime
 import logging
 
-from peewee import (CharField, DateTimeField, MySQLDatabase,
+from peewee import (CharField, DateTimeField, MySQLDatabase, TextField,
                     IntegerField, BooleanField, ForeignKeyField)
 from peewee import Model, InternalError, PrimaryKeyField
 
 from config.config import DB_LOGIN, DB_PASSWORD, DB_HOST, DB_NAME, DB_PORT
+
+data_zona = [
+    {'name_zona': 'VIP-Zona'},
+    {'name_zona': 'Game-Zona'},
+    {'name_zona': 'Bar-Zona'},
+    {'name_zona': 'Well-Bar-Zona'},
+    {'name_zona': 'Well-Rest-Zona'},
+    {'name_zona': 'Center-Rest-Zona'},
+    {'name_zona': 'BackAlley-Rest-Zona'}
+]
+data_gender = [
+    {'name': 'men', 'symbol': '♂️'},
+    {'name': 'women', 'symbol': '♀️'}]
+data_tables = [
+    {'number_table': 1},
+]
 
 
 def create_models() -> None:
@@ -14,23 +30,6 @@ def create_models() -> None:
     :return: None
     """
     try:
-
-        data_zona = [
-            {'name_zona': 'VIP-Zona'},
-            {'name_zona': 'Game-Zona'},
-            {'name_zona': 'Bar-Zona'},
-            {'name_zona': 'Well-Bar-Zona'},
-            {'name_zona': 'Well-Rest-Zona'},
-            {'name_zona': 'Center-Rest-Zona'},
-            {'name_zona': 'BackAlley-Rest-Zona'}
-        ]
-        data_gender = [
-            {'name': 'men', 'symbol': '♂️'},
-            {'name': 'women', 'symbol': '♀️'}]
-        data_tables = [
-            {'number_table': 1},
-        ]
-
         Gender.create_table()
         User.create_table()
         Admin.create_table()
@@ -108,9 +107,9 @@ class Admin(BaseUserModel):
 
 class Event(BaseUserModel):
     id = PrimaryKeyField(unique=True)
-    name_event = CharField()
-    description_event = CharField(null=True)
-    media_event = CharField(null=True)
+    name_event = CharField(null=True)
+    description_event = TextField(null=True)
+    media_event = TextField(null=True)
     creation_time = DateTimeField(default=datetime.datetime.now)
     weekday = CharField(null=True)
     start_time_event = DateTimeField()
@@ -166,3 +165,5 @@ class PartyReservationHistory(BaseUserModel):
 
     class Meta:
         db_table = 'party_reservation_history'
+
+

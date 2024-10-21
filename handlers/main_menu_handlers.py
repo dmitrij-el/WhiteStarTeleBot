@@ -4,7 +4,7 @@ from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
 
 from data.models_peewee import User
-from states.states import StateMenu, StateAdminMenu, StateTableReservations, StatePartyReservations
+from states.states import StateMenu, StateAdminMenu, StateTableReservations, StatePartyReservations, StateUserProfile
 from keyboards import kb_main_menu, kb_admin_menu, kb_user_profile, kb_table_reservations
 from data import db_funcs_user_account, db_funcs_user_navigator
 from data.texts import text_navigator, text_admin_navigator, text_reservation, text_user_profile
@@ -53,7 +53,7 @@ async def handler_start(msg: Message, state: FSMContext):
 
 
 @router.message(Command('main_menu'))
-@router.message(F.text.lower().in_({"выйти в меню", "главное меню", 'главное меню'}))
+@router.message(F.text.lower().in_({"выйти в меню", 'главное меню'}))
 async def f_main_menu(msg: Message, state: FSMContext):
     await state.clear()
     user_id = msg.from_user.id
@@ -79,15 +79,17 @@ async def main_menu(msg: Message, state: FSMContext):
 async def info_events(msg: Message, state: FSMContext):
     user_id = msg.from_user.id
     answer = await db_funcs_user_navigator.load_events()
-    for ans in answer:
-        await msg.answer(text=ans)
-    await msg.answer(text=text_navigator.main_menu,
-                     reply_markup=kb_main_menu.main_menu(user_id=user_id))
+    if type(answer) is str:
+        await msg.answer(text=answer,
+                         reply_markup=kb_main_menu.main_menu(user_id=user_id))
+
+    else:
+        for ans in answer:
+            await msg.answer_media_group(media=ans.build(), reply_markup=kb_main_menu.main_menu(user_id=user_id))
     await state.set_state(StateMenu.main_menu)
 
 
 async def table_reservations(msg: Message, state: FSMContext):
-    print('kkk')
     user_id = msg.from_user.id
     user = User.get(User.user_id == user_id)
     if user.phone is None:
@@ -96,18 +98,31 @@ async def table_reservations(msg: Message, state: FSMContext):
             reply_markup=kb_user_profile.choose_phone())
         await state.set_state(StateTableReservations.add_table_reservations_phone)
     else:
-        await msg.answer(text=text_reservation.add_party_reservations_booking_start_time_date,
+        answer = await db_funcs_user_navigator.load_table_reservations(user_id=user_id)
+        if answer is not None:
+            for ans in answer:
+                await msg.answer(text=ans)
+        await msg.answer(text=text_reservation.add_table_reservations_booking_start_time_date,
                          reply_markup=kb_table_reservations.date_enter())
         await state.set_state(StateTableReservations.add_table_reservations_booking_start_time_date)
 
 
 async def party_reservations(msg: Message, state: FSMContext):
     user_id = msg.from_user.id
-    answer = await db_funcs_user_navigator.load_table_reservations(user_id=user_id)
-    if answer is not None:
-        for ans in answer:
-            await msg.answer(text=ans)
-    await state.set_state(StatePartyReservations.main_party_reservations)
+    user = User.get(User.user_id == user_id)
+    if user.phone is None:
+        await msg.answer(
+            text=text_reservation.add_party_reservations_phone + '\n' + text_user_profile.basic_data_update['phone'],
+            reply_markup=kb_user_profile.choose_phone())
+        await state.set_state(StatePartyReservations.add_party_reservations_phone)
+    else:
+        answer = await db_funcs_user_navigator.load_party_reservations(user_id=user_id)
+        if answer is not None:
+            for ans in answer:
+                await msg.answer(text=ans)
+        await msg.answer(text=text_reservation.add_party_reservations_booking_start_time_date,
+                         reply_markup=kb_table_reservations.date_enter())
+        await state.set_state(StatePartyReservations.add_party_reservations_booking_start_time_date)
 
 
 async def info_rest(msg: Message, state: FSMContext):
@@ -123,8 +138,10 @@ async def menu_rest(msg: Message, state: FSMContext):
 
 
 async def user_profile(msg: Message, state: FSMContext):
+    user_id = msg.from_user.id
     await msg.answer(text='Ваши данные',
-                     reply_markup=kb_main_menu.main_menu(user_id=msg.from_user.id))
+                     reply_markup=kb_user_profile.user_profile_basic_data(user_id=user_id))
+    await state.set_state(StateMenu.user_profile)
 
 
 async def send_help(msg: Message, state: FSMContext):
