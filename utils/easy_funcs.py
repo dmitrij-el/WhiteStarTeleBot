@@ -92,13 +92,13 @@ def correction_datas(phone_number: str = None,
 
 def admin_checking_table_reservations(datas: dict) -> tuple[bool, str]:
     answer = text_admin_navigator.admin_add_table_reservations_confirmation_enter_data
-    answer += (f'\nНомер стола: {datas['table']}'
-               f'\nКоличество гостей: {datas['number_of_guests']}'
-               f'\nДата и время резерва: {datas['booking_start_time']}'
-               f'\nТелефон: {datas['phone_number']}')
+    answer += (f'\nНомер стола: {datas["table"]}'
+               f'\nКоличество гостей: {datas["number_of_guests"]}'
+               f'\nДата и время резерва: {datas["booking_start_time"]}'
+               f'\nТелефон: {datas["phone_number"]}')
     if datas.setdefault('name_user') is not None:
-        answer += f'\nИмя: {datas['name_user']}'
-    user = User.select().where(User.phone == datas['phone_number'])
+        answer += f'\nИмя: {datas["name_user"]}'
+    user = User.select().where(User.phone == datas["phone_number"])
     if user:
         user = user.get()
         answer += f'\nДанные о {user.name}: @{user.username}'
@@ -117,12 +117,12 @@ def admin_checking_table_reservations(datas: dict) -> tuple[bool, str]:
 def admin_checking_party_reservations(datas: dict) -> tuple[bool, str]:
     answer = text_admin_navigator.admin_add_party_reservations_confirmation_enter_data
     answer += (f'\nКорпоратив'
-               f'\nКоличество гостей: {datas['number_of_guests']}'
-               f'\nДата и время резерва: {datas['booking_start_time']}'
-               f'\nТелефон: {datas['phone_number']}')
-    if datas.setdefault('name_user') is not None:
-        answer += f'\nИмя: {datas['name_user']}'
-    user = User.select().where(User.phone == datas['phone_number'])
+               f'\nКоличество гостей: {datas["number_of_guests"]}'
+               f'\nДата и время резерва: {datas["booking_start_time"]}'
+               f'\nТелефон: {datas["phone_number"]}')
+    if datas.setdefault("name_user") is not None:
+        answer += f'\nИмя: {datas["name_user"]}'
+    user = User.select().where(User.phone == datas["phone_number"])
     if user:
         user = user.get()
         answer += f'\nДанные о {user.name}: @{user.username}'
@@ -142,14 +142,14 @@ def admin_checking_event(datas: dict) -> MediaGroupBuilder:
     answer = ''
     weekday = ', '.join([key for key, value
                          in text_admin_navigator.weekday_dicts.items() for day
-                         in datas['weekday'] if value == int(day)])
-    answer += (f'\nНазвание мероприятия: <b>{datas['name_event']}</b>'
-               f'\nДата старта мероприятия: <b>{datas['start_time_event']}</b>'
-               f'\nДата конца мероприятия: <b>{datas['end_time_event']}</b>'
+                         in datas["weekday"] if value == int(day)])
+    answer += (f'\nНазвание мероприятия: <b>{datas["name_event"]}</b>'
+               f'\nДата старта мероприятия: <b>{datas["start_time_event"]}</b>'
+               f'\nДата конца мероприятия: <b>{datas["end_time_event"]}</b>'
                f'\nДни недели, проведения мероприятия: <b>{weekday}</b>'
-               f'\n<b>Описание:</b>\n{datas['description_event']}\n')
+               f'\n<b>Описание:</b>\n{datas["description_event"]}\n')
     media_group = MediaGroupBuilder(caption=answer)
-    media_links = datas['media_event']
+    media_links = datas["media_event"]
     for media in media_links:
         if media[1] == 'photo':
             media_group.add_photo(media=media[0])

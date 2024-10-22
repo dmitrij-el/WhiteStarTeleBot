@@ -21,6 +21,7 @@ utils - работа с API и другой функционал бота
 import asyncio
 import locale
 import logging
+import datetime
 
 from aiogram import Bot, Dispatcher, F
 from aiogram.filters import Command
@@ -95,19 +96,22 @@ async def main():
     dp.message.register(main_menu_handlers.user_profile,
                         Command('profile'))
 
-
     dp.message.register(main_menu_handlers.send_help,
                         F.text.lower().in_({"помощь", "help"}))
     dp.message.register(main_menu_handlers.send_help,
                         Command('help'))
-
 
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
 
 
 if __name__ == "__main__":
-    locale.setlocale(category=locale.LC_ALL, locale="Russian")
+    locale.setlocale(category=locale.LC_ALL, locale="ru-RU.utf8")
     models_peewee.create_models()
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(
+        filename=f'bot-from-{datetime.datetime.now().date()}.log',
+        filemode='w',
+        datefmt='%Y-%m-%d %H:%M:%S',
+        level=logging.WARNING
+    )
     asyncio.run(main())
