@@ -185,8 +185,10 @@ async def load_admin_list():
                 answer.append('')
                 admin_id = data.id
                 user_id = data.user_id
+                username = data.username
                 answer[-1] += f'ID записи: {admin_id}'
                 answer[-1] += f'\nID пользователя: {user_id}'
+                answer[-1] += f'\nUSERNAME пользователя: {username}'
                 user = User.select().where(User.user_id == user_id)
                 if user:
                     user = user.get()

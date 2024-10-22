@@ -149,13 +149,15 @@ def admin_checking_event(datas: dict) -> MediaGroupBuilder:
                f'\nДни недели, проведения мероприятия: <b>{weekday}</b>'
                f'\n<b>Описание:</b>\n{datas["description_event"]}\n')
     media_group = MediaGroupBuilder(caption=answer)
+    datas.setdefault("media_event")
     media_links = datas["media_event"]
-    for media in media_links:
-        if media[1] == 'photo':
-            media_group.add_photo(media=media[0])
-        elif media[1] == 'video':
-            media_group.add_video(media=media[0])
-        elif media[1] == 'document':
-            media_group.add_document(media=media[0])
+    if media_links:
+        for media in media_links:
+            if media[1] == 'photo':
+                media_group.add_photo(media=media[0])
+            elif media[1] == 'video':
+                media_group.add_video(media=media[0])
+            elif media[1] == 'document':
+                media_group.add_document(media=media[0])
 
     return media_group

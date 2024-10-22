@@ -45,6 +45,21 @@ async def admin_events(msg: Message, state: FSMContext) -> None:
 
 @router.message(StateAdminMenu.admin_add_admin_list)
 async def admin_delete_events(msg: Message, state: FSMContext):
+    def check_id(x):
+        try:
+            int(x)
+            x = len(x) == 9
+            return bool(x)
+        except ValueError:
+            return False
+
+    def check_username(x):
+        try:
+            x = x[0] == '@'
+            return bool(x)
+        except ValueError:
+            return False
+
     user_id = msg.from_user.id
     prompt = msg.text
     if check_admin(user_id=user_id):
@@ -54,27 +69,32 @@ async def admin_delete_events(msg: Message, state: FSMContext):
             await state.clear()
             await state.set_state(StateAdminMenu.admin_main_menu)
         else:
-            with db_beahea:
-                def check(x):
-                    try:
-                        int(x)
-                        x = len(x) == 9
-                        return bool(x)
-                    except ValueError:
-                        return False
-                if check(prompt):
-                    Admin.insert(user_id=prompt).execute()
-                    answer = await db_funcs_admin_menu.load_admin_list()
-                    for ans in answer:
-                        await msg.answer(text=ans)
-                    await msg.answer(text=text_admin_navigator.admin_admin_list,
-                                     reply_markup=kb_admin_menu.admin_party_reservations_menu(user_id=user_id))
-                    await state.set_state(StateAdminMenu.admin_admin_list)
-                else:
-                    await msg.answer(text=text_admin_navigator.err_error
-                                          + text_admin_navigator.admin_add_admin_list,
-                                     reply_markup=kb_admin_menu.admin_cancel(user_id=user_id))
-                    await state.set_state(StateAdminMenu.admin_add_admin_list)
+            if True in [check_id(prompt), check_username(prompt)]:
+                datas = dict()
+                with db_beahea.atomic():
+                    if check_id(prompt):
+                        prompt = int(prompt)
+                        datas['user_id'] = prompt
+                        user = User.select().where(User.user_id == datas['user_id'])
+                        if user:
+                            datas['username'] = user.get().username
+                    elif check_username(prompt):
+                        datas['username'] = prompt[1::]
+                        user = User.select().where(User.username == datas['username'])
+                        if user:
+                            datas['user_id'] = user.get().user_id
+                    Admin.create(**datas)
+                answer = await db_funcs_admin_menu.load_admin_list()
+                for ans in answer:
+                    await msg.answer(text=ans)
+                await msg.answer(text=text_admin_navigator.admin_admin_list,
+                                 reply_markup=kb_admin_menu.admin_party_reservations_menu(user_id=user_id))
+                await state.set_state(StateAdminMenu.admin_admin_list)
+            else:
+                await msg.answer(text=text_admin_navigator.err_error
+                                      + text_admin_navigator.admin_add_admin_list,
+                                 reply_markup=kb_admin_menu.admin_cancel(user_id=user_id))
+                await state.set_state(StateAdminMenu.admin_add_admin_list)
     else:
         await msg.answer(text=text_admin_navigator.err_admin_access_rights,
                          reply_markup=kb_main_menu.main_menu(user_id=user_id))

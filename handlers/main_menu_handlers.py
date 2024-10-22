@@ -3,7 +3,7 @@ from aiogram.types import Message
 from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
 
-from data.models_peewee import User
+from data.models_peewee import User, Admin
 from states.states import StateMenu, StateAdminMenu, StateTableReservations, StatePartyReservations, StateUserProfile
 from keyboards import kb_main_menu, kb_admin_menu, kb_user_profile, kb_table_reservations
 from data import db_funcs_user_account, db_funcs_user_navigator
@@ -28,6 +28,9 @@ async def handler_start(msg: Message, state: FSMContext):
     """
 
     user_id = msg.from_user.id
+    username = msg.from_user.username
+    surname = msg.from_user.last_name
+    name = msg.from_user.first_name
     user = db_funcs_user_account.check_user_datas(user_id=user_id)
     if user:
         await msg.answer(text=text_navigator.greet_cont_replay.format(name=msg.from_user.first_name),
@@ -36,14 +39,28 @@ async def handler_start(msg: Message, state: FSMContext):
 
     else:
         acc_dict = {
-            'user_id': msg.from_user.id,
-            'name': msg.from_user.first_name,
-            'surname': msg.from_user.last_name,
-            'username': msg.from_user.username
+            'user_id': user_id,
+            'name': name,
+            'surname': surname,
+            'username': username
         }
         db_funcs_user_account.user_rec_datas_in_reg(acc_dict=acc_dict)
         if db_funcs_user_account.check_user_datas(user_id):
-            await msg.answer(text=text_navigator.greet_cont.format(name=msg.from_user.first_name),
+            check_admin_user_user_id = Admin.select().where(Admin.user_id == user_id)
+            check_admin_user_username = Admin.select().where(Admin.username == username)
+            if check_admin_user_user_id:
+                check_admin_user = check_admin_user_user_id.get()
+                check_admin_username = check_admin_user.username
+                if check_admin_username is None:
+                    adm = Admin.update(username = username).where(Admin.user_id == user_id)
+                    adm.execute()
+            elif check_admin_user_username:
+                check_admin_user = check_admin_user_username.get()
+                check_admin_user_id = check_admin_user.user_id
+                if check_admin_user_id is None:
+                    adm = Admin.update(user_id = user_id).where(Admin.username == username)
+                    adm.execute()
+            await msg.answer(text=text_navigator.greet_cont.format(name=name),
                              reply_markup=kb_main_menu.main_menu(user_id=user_id))
             await state.set_state(StateMenu.main_menu)
         else:

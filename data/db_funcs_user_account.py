@@ -79,11 +79,12 @@ def user_update_data(user_id: int, column_datas: str, data: str | int | bool) ->
         return False
 
 
-def check_admin(user_id: int):
+def check_admin(user_id: int = None):
+
     admin_list = list()
     admin_list.append(int(ADMIN_DIMA))
     with db_beahea:
-        adm = Admin.select(Admin.user_id)
+        adm = Admin.select()
         for id_adm in adm:
             admin_list.append(int(id_adm.user_id))
     return bool(user_id in admin_list)

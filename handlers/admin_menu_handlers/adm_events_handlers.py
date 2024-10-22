@@ -239,11 +239,17 @@ async def name_event(msg: Message, state: FSMContext) -> None:
             await state.set_state(StateAdminMenu.admin_main_menu)
         elif prompt == 'Загрузить':
             datas = await state.get_data()
-            answer = easy_funcs.admin_checking_event(datas=datas)
-            await msg.answer(text=text_admin_navigator.admin_add_event_confirmation_enter_data,
-                             reply_markup=kb_admin_menu.admin_yes_no(user_id=user_id))
-            await msg.answer_media_group(media=answer.build())
-            await state.set_state(StateAdminMenu.admin_add_event_confirmation_enter_data)
+            datas.setdefault('media_event')
+            if datas['media_event'] is None:
+                await msg.answer(text=text_admin_navigator.admin_add_err_event_media,
+                                 reply_markup=kb_admin_menu.admin_load_or_cancel(user_id=user_id))
+                await state.set_state(StateAdminMenu.admin_add_event_media)
+            else:
+                answer = easy_funcs.admin_checking_event(datas=datas)
+                await msg.answer(text=text_admin_navigator.admin_add_event_confirmation_enter_data,
+                                 reply_markup=kb_admin_menu.admin_yes_no(user_id=user_id))
+                await msg.answer_media_group(media=answer.build())
+                await state.set_state(StateAdminMenu.admin_add_event_confirmation_enter_data)
         else:
             datas = await state.get_data()
             data = datas.setdefault('media_event')
