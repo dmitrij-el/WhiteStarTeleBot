@@ -1,5 +1,5 @@
 from aiogram import F, Router
-from aiogram.types import Message
+from aiogram.types import Message, Birthdate
 from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
 
@@ -53,13 +53,17 @@ async def user_profile_main(msg: Message, state: FSMContext):
 async def user_profile_main(msg: Message, state: FSMContext):
     user_id = msg.from_user.id
     prompt = msg.text
+    contact = msg.contact.phone_number
     if prompt == 'Отмена':
         await msg.answer(text='Ваши данные',
                          reply_markup=kb_user_profile.user_profile_basic_data(user_id=user_id))
         await state.set_state(StateMenu.user_profile)
         return
     else:
-        corr_data = easy_funcs.correction_datas(phone_number=prompt)
+        if contact:
+            corr_data = easy_funcs.correction_datas(phone_number=contact)
+        else:
+            corr_data = easy_funcs.correction_datas(phone_number=prompt)
         check_data = easy_funcs.checking_data_expression(phone_number=corr_data)
         if check_data:
             upd = db_funcs_user_account.user_update_data(user_id=user_id, column_datas='phone', data=corr_data)

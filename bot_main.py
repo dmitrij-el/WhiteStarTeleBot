@@ -108,10 +108,11 @@ async def main():
 if __name__ == "__main__":
     locale.setlocale(category=locale.LC_ALL, locale="ru-RU.utf8")
     models_peewee.create_models()
-    logging.basicConfig(
-        filename=f'bot-from-{datetime.datetime.now().date()}.log',
-        filemode='w',
-        datefmt='%Y-%m-%d %H:%M:%S',
-        level=logging.WARNING
-    )
+    logging.basicConfig(level=logging.INFO, filename="py_log.log", filemode="w",
+                        format="%(asctime)s %(levelname)s %(message)s")
+    logging.debug("A DEBUG Message")
+    logging.info("An INFO")
+    logging.warning("A WARNING")
+    logging.error("An ERROR")
+    logging.critical("A message of CRITICAL severity")
     asyncio.run(main())
