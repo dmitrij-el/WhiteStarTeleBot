@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta, date
+import os
 
 from aiogram import Router
-from aiogram.types import Message
+from aiogram.types import Message, FSInputFile
 from aiogram.fsm.context import FSMContext
 
 from data import db_funcs_admin_menu
@@ -10,12 +11,15 @@ from keyboards import kb_main_menu, kb_user_profile, kb_table_reservations
 from data.texts import text_user_profile, text_reservation, text_navigator
 from data.models_peewee import db_beahea, TableReservationHistory, Table, User
 from utils import easy_funcs
+from utils.table_reservation import working_images_funcs
 
 router = Router()
 
 """
 Резервирование стола
 """
+
+
 
 
 @router.message(StateTableReservations.main_table_reservations)
@@ -126,9 +130,13 @@ async def add_table_reservations_booking_start_time_time(msg: Message, state: FS
             tables_open.sort()
             datas['tables_open'] = tables_open
             await state.update_data(**datas)
-            await msg.answer(text=text_reservation.add_table_reservations_table + ':\n' + str(datas),
-                             reply_markup=kb_user_profile.back_button())
+            path_plan = await working_images_funcs.processing_images(tables_close)
+            plan_img = FSInputFile(path=path_plan)
+            await msg.answer_photo(photo=plan_img,
+                                   caption=text_reservation.add_table_reservations_table,
+                                   reply_markup=kb_user_profile.back_button())
             await state.set_state(StateTableReservations.add_table_reservations_table)
+            os.remove(path=path_plan)
         else:
             await msg.answer(text=text_reservation.err_error
                                   + text_reservation.add_table_reservations_booking_start_time_time,
@@ -151,6 +159,7 @@ async def add_table_reservations_table(msg: Message, state: FSMContext) -> None:
             datas['table'] = int(prompt)
             del datas['tables_open']
             await state.update_data(**datas)
+
             await msg.answer(text=text_reservation.add_table_reservations_number_of_guests,
                              reply_markup=kb_user_profile.back_button())
             await state.set_state(StateTableReservations.add_table_reservations_number_of_guests)
@@ -181,7 +190,7 @@ async def add_table_reservations_number_of_guests(msg: Message, state: FSMContex
                 table=table,
                 booking_start_time=datas['booking_start_time'].strftime('%d-%m-%Y %H:%M'),
                 number_of_guests=datas['number_of_guests']),
-                             reply_markup=kb_table_reservations.yes_no())
+                reply_markup=kb_table_reservations.yes_no())
             await state.set_state(StateTableReservations.add_table_reservations_confirmation_enter_data)
         elif not check_date:
             await msg.answer(text=text_reservation.err_error
