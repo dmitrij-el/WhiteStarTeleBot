@@ -4,6 +4,7 @@ from aiogram import Router
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 
+from data import db_funcs_admin_menu
 from states.states import StateTableReservations, StateMenu
 from keyboards import kb_main_menu, kb_user_profile, kb_table_reservations
 from data.texts import text_user_profile, text_reservation, text_navigator
@@ -75,7 +76,6 @@ async def add_table_reservations_booking_start_time_date(msg: Message, state: FS
             cor_date = easy_funcs.correction_datas(date_day=prompt)
             if date.today() <= datetime.strptime(cor_date, '%Y-%m-%d').date():
                 datas['user_id'] = User.select().where(User.user_id == user_id).get().id
-                print(datas['user_id'])
                 datas['date'] = cor_date
                 await state.update_data(**datas)
                 date_datas = datetime.strptime(datas['date'], '%Y-%m-%d')
@@ -174,9 +174,11 @@ async def add_table_reservations_number_of_guests(msg: Message, state: FSMContex
         if check_date:
             datas = await state.get_data()
             datas['number_of_guests'] = prompt
+            table = Table.select().where(Table.number_table == datas["table"]).get()
+            table = table.name_table
             await state.update_data(**datas)
             await msg.answer(text=text_reservation.table_reservation.format(
-                table=datas['table'],
+                table=table,
                 booking_start_time=datas['booking_start_time'].strftime('%d-%m-%Y %H:%M'),
                 number_of_guests=datas['number_of_guests']),
                              reply_markup=kb_table_reservations.yes_no())
@@ -195,8 +197,15 @@ async def admin_add_table_reservations_confirmation_enter_data(msg: Message, sta
     if prompt == 'Да':
         datas = await state.get_data()
         try:
+            table_id = Table.get(Table.number_table == datas['table'])
+            datas['table'] = table_id.id
             with db_beahea.atomic():
                 TableReservationHistory.create(**datas)
+            from handlers.admin_menu_handlers import sending_messages
+            notification = await db_funcs_admin_menu.l_table_reservation(user_id=user_id,
+                                                                         date_reserve=datas['booking_start_time'],
+                                                                         table_id=datas['table'])
+            await sending_messages.notification_reservations_today(msg=msg, notification=notification)
             await msg.answer(text=text_reservation.table_successful_data_rec,
                              reply_markup=kb_main_menu.main_menu(user_id=user_id))
             await state.clear()

@@ -4,7 +4,7 @@ from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
 
 from data.models_peewee import User, Admin
-from states.states import StateMenu, StateAdminMenu, StateTableReservations, StatePartyReservations, StateUserProfile
+from states.states import StateMenu, StateAdminMenu, StateTableReservations, StatePartyReservations
 from keyboards import kb_main_menu, kb_admin_menu, kb_user_profile, kb_table_reservations
 from data import db_funcs_user_account, db_funcs_user_navigator
 from data.texts import text_navigator, text_admin_navigator, text_reservation, text_user_profile
@@ -142,14 +142,14 @@ async def party_reservations(msg: Message, state: FSMContext):
         await state.set_state(StatePartyReservations.add_party_reservations_booking_start_time_date)
 
 
-async def info_rest(msg: Message, state: FSMContext):
+async def info_rest(msg: Message):
     await msg.answer(text='О white Star',
                      reply_markup=kb_main_menu.main_menu(user_id=msg.from_user.id))
     await msg.answer_location(latitude=55.889991, longitude=37.587959)
     await msg.answer(text='https://yandex.ru/maps/-/CDTf4UnL')
 
 
-async def menu_rest(msg: Message, state: FSMContext):
+async def menu_rest(msg: Message):
     await msg.answer(text="https://wslounge.ru/menu",
                      reply_markup=kb_main_menu.main_menu(user_id=msg.from_user.id))
 

@@ -1,20 +1,15 @@
-import asyncio
 from datetime import datetime
-from typing import Union, List
 
-from aiogram import Router, BaseMiddleware, types
-from aiogram.dispatcher.event.bases import CancelHandler
-from aiogram.enums import ContentType
+from aiogram import Router
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
-from aiogram.utils.media_group import MediaGroupBuilder
 
 from states.states import StateAdminMenu, StateMenu
 from keyboards import kb_main_menu, kb_admin_menu
 from data import db_funcs_admin_menu
 from data.texts import text_admin_navigator
 from data.db_funcs_user_account import check_admin
-from data.models_peewee import db_beahea, PartyReservationHistory, Event
+from data.models_peewee import db_beahea, Event
 from utils import easy_funcs
 
 router = Router()

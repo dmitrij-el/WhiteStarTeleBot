@@ -6,7 +6,7 @@ from aiogram.utils.media_group import MediaGroupBuilder
 
 from data.texts import text_admin_navigator
 from data.models_peewee import db_beahea
-from data.models_peewee import User, Admin, TableReservationHistory, PartyReservationHistory, Event
+from data.models_peewee import User, Admin, TableReservationHistory, PartyReservationHistory, Event, Table
 
 
 async def load_table_reservations(date: datetime = None) -> list:
@@ -26,7 +26,7 @@ async def load_table_reservations(date: datetime = None) -> list:
                 for data in datas:
                     user = data.user
                     reserve_id = data.id
-                    table = data.table.number_table
+                    table = data.table.name_table
                     number_of_guests = data.number_of_guests
                     booking_start_time = data.booking_start_time.strftime('%d-%m-%Y %H:%M')
                     if cont_day != data.booking_start_time.strftime('%d-%m-%Y %A'):
@@ -34,7 +34,7 @@ async def load_table_reservations(date: datetime = None) -> list:
                         cont_day = data.booking_start_time.strftime('%d-%m-%Y %A')
                         answer[-1] += f'\n\n<b><u>{cont_day}</u></b>'
                     answer[-1] += (f'\n\nid резерва: <b>{reserve_id}</b>'
-                                   f'\nНомер стола: <b>{table}</b>'
+                                   f'\n<b>{table}</b>'
                                    f'\nКоличество гостей: <b>{number_of_guests}</b>'
                                    f'\nДата и время резерва: <b>{booking_start_time}</b>')
                     if data.phone_number:
@@ -147,11 +147,11 @@ async def load_events(date: datetime = None) -> list | str:
                                          in text_admin_navigator.weekday_dicts.items() for day
                                          in data.weekday.split(',') if value == int(day)])
                     caption += (f'\n\nid мероприятия: <b>{event_id}</b>'
-                                   f'\nНазвание мероприятия: <b>{name_event}</b>'
-                                   f'\nДата старта мероприятия: <b>{start_time_event.date()}</b>'
-                                   f'\nДата конца мероприятия: <b>{end_time_event.date()}</b>'
-                                   f'\nДни недели, проведения мероприятия: <b>{weekday}</b>'
-                                   f'\n<b>Описание:</b>\n{description_event}\n')
+                                f'\nНазвание мероприятия: <b>{name_event}</b>'
+                                f'\nДата старта мероприятия: <b>{start_time_event.date()}</b>'
+                                f'\nДата конца мероприятия: <b>{end_time_event.date()}</b>'
+                                f'\nДни недели, проведения мероприятия: <b>{weekday}</b>'
+                                f'\n<b>Описание:</b>\n{description_event}\n')
                     media_group = MediaGroupBuilder(caption=caption)
                     media_links = data.media_event.split(' // ')
                     for i in range(len(media_links)):
@@ -214,3 +214,84 @@ async def load_admin_list():
         logging.error(f'В процессе загрузки списка администраторов произошла непредвиденная ошибка\n'
                       f'Ошибка: {exp}')
         return ['В процессе загрузки списка администраторов произошла непредвиденная ошибка\n']
+
+
+async def l_party_reservation(user_id: int, date_reserve: datetime) -> str:
+    try:
+        with (db_beahea):
+            datas = PartyReservationHistory.select().where(PartyReservationHistory.user == User.get(User.user_id == user_id),
+                                                           PartyReservationHistory.booking_start_time == date_reserve)
+            answer = ''
+            for data in datas:
+                user = data.user
+                reserve_id = data.id
+                number_of_guests = data.number_of_guests
+                booking_start_time = data.booking_start_time.strftime('%d-%m-%Y %H:%M')
+                name_guest = data.name_user
+                answer += (f'\n\nid резерва: <b>{reserve_id}</b>'
+                               f'\nКоличество гостей: <b>{number_of_guests}</b>'
+                               f'\nДата и время резерва: <b>{booking_start_time}</b>')
+                if data.phone_number:
+                    phone = data.phone_number
+                else:
+                    phone = data.user.phone
+                answer += f'\nНомер телефона: {phone}'
+                if name_guest:
+                    answer += f'\nИмя: {name_guest}'
+                if user:
+                    answer += f'\nДанные о {user.name}: @{user.username}'
+                    gender = user.gender
+                    date_birth = user.date_birth
+                    if gender is not None:
+                        answer += f', {user.gender.symbol}'
+                    if date_birth is not None:
+                        date_birth = date_birth.date()
+                        answer += f', {date_birth}'
+            return answer
+    except Exception as exp:
+        logging.error(f'Ошибка при формировании текста для пересылки сообщения после успешного резервировании корпоратива.\n'
+                      f'Ошибка: {exp}')
+        return 'Ошибка при формировании текста для пересылки сообщения после успешного резервировании корпоратива.\n'
+
+
+async def l_table_reservation(user_id: int, date_reserve: datetime, table_id: int) -> str:
+    try:
+        with (db_beahea):
+            datas = TableReservationHistory.select().where(TableReservationHistory.user == User.get(User.user_id == user_id),
+                                                           TableReservationHistory.booking_start_time == date_reserve,
+                                                           TableReservationHistory.table == Table.get(Table.id == table_id))
+            if datas:
+                answer = ''
+                for data in datas:
+                    user = data.user
+                    reserve_id = data.id
+                    table = data.table.name_table
+                    number_of_guests = data.number_of_guests
+                    booking_start_time = data.booking_start_time.strftime('%d-%m-%Y %H:%M')
+                    answer += (f'\n\nid резерва: <b>{reserve_id}</b>'
+                                   f'\n<b>{table}</b>'
+                                   f'\nКоличество гостей: <b>{number_of_guests}</b>'
+                                   f'\nДата и время резерва: <b>{booking_start_time}</b>')
+                    if data.phone_number:
+                        phone = data.phone_number
+                    else:
+                        phone = data.user.phone
+                    answer += f'\nНомер телефона: {phone}'
+                    if data.name_user:
+                        name_guest = data.name_user
+                        answer += f'\nИмя: {name_guest}'
+                    if user:
+                        answer += f'\nДанные о {user.name}: @{user.username}'
+                        gender = user.gender
+                        date_birth = user.date_birth
+                        if gender is not None:
+                            answer += f', {user.gender.symbol}'
+                        if date_birth is not None:
+                            date_birth = date_birth.date()
+                            answer += f', {date_birth}'
+
+                return answer
+    except Exception as exp:
+        logging.error(f'Ошибка при формировании текста для пересылки сообщения после успешного резервирования стола.\n'
+                      f'Ошибка: {exp}')
+        return 'Ошибка при формировании текста для пересылки сообщения после успешного резервирования стола.'

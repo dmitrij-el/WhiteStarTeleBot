@@ -68,7 +68,7 @@ async def load_events() -> list | str:
 async def load_table_reservations(user_id: int) -> list | None:
     try:
 
-        datas = TableReservationHistory.select().where(TableReservationHistory.user == User.get(user_id==user_id),
+        datas = TableReservationHistory.select().where(TableReservationHistory.user == User.get(User.user_id == user_id),
                                                        TableReservationHistory.booking_start_time.cast('date')
                                                        >= datetime.now().date()
                                                        ).order_by(TableReservationHistory.booking_start_time)
@@ -77,11 +77,11 @@ async def load_table_reservations(user_id: int) -> list | None:
             for data in datas:
                 answer.append('')
                 reserve_id = data.id
-                table = data.table.number_table
+                table = data.table.name_table
                 number_of_guests = data.number_of_guests
                 booking_start_time = data.booking_start_time.strftime('%d-%m-%Y %H:%M')
                 answer[-1] += (f'\n\n<b><u>id резерва: {reserve_id}</u></b>'
-                               f'\nНомер стола: {table}'
+                               f'\n{table}'
                                f'\nКоличество гостей: {number_of_guests}'
                                f'\nДата и время резерва: {booking_start_time}')
             if len(answer) != 0:
@@ -99,7 +99,7 @@ async def load_table_reservations(user_id: int) -> list | None:
 async def load_party_reservations(user_id: int) -> list | None:
     try:
 
-        datas = PartyReservationHistory.select().where(PartyReservationHistory.user == User.get(user_id==user_id),
+        datas = PartyReservationHistory.select().where(PartyReservationHistory.user == User.get(User.user_id == user_id),
                                                        PartyReservationHistory.booking_start_time.cast('date')
                                                        >= datetime.now().date()
                                                        ).order_by(PartyReservationHistory.booking_start_time)

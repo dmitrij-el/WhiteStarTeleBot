@@ -5,7 +5,7 @@ party_cancel_data_rec = 'Резерв корпоратива отменен.'
 table_successful_data_rec = 'Стол успешно зарезервирован!'
 party_successful_data_rec = 'Заявка на резерв для мероприятия успешно принята. Скоро с Вами свяжутся!'
 
-table_reservation = ("Стол №<b><u>{table}</u></b>\n"
+table_reservation = ("<b><u>{table}</u></b>\n"
                      "Количество персон: <b><u>{number_of_guests}</u></b>\n"
                      "Время резерва: <b><u>{booking_start_time}</u></b>")
 party_reservation = ("Количество персон: <b><u>{number_of_guests}</u></b>\n"

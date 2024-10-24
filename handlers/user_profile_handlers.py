@@ -1,14 +1,12 @@
-from aiogram import F, Router
-from aiogram.types import Message, Birthdate
-from aiogram.filters import Command, CommandStart
+from aiogram import Router
+from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 
-from states.states import StateAdminMenu, StateMenu, StateUserProfile
-from keyboards import kb_main_menu, kb_admin_menu, kb_user_profile
-from data import db_funcs_user_account, db_funcs_admin_menu
-from data.texts import text_navigator, text_admin_navigator, text_user_profile
-from data.db_funcs_user_account import check_admin
-from data.models_peewee import TableReservationHistory, Table, PartyReservationHistory, Event, Admin, User, Gender
+from states.states import StateMenu, StateUserProfile
+from keyboards import kb_user_profile
+from data import db_funcs_user_account
+from data.texts import text_navigator, text_user_profile
+from data.models_peewee import User, Gender
 from utils import easy_funcs
 
 router = Router()

@@ -13,7 +13,6 @@ from aiogram.types import (
     ReplyKeyboardMarkup
 )
 
-import data.models_peewee
 from data.texts import text_user_profile
 from data.models_peewee import Gender, User, db_beahea
 

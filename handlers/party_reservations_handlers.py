@@ -8,6 +8,7 @@ from states.states import StateMenu, StatePartyReservations
 from keyboards import kb_main_menu, kb_user_profile, kb_table_reservations
 from data.texts import text_user_profile, text_reservation, text_navigator
 from data.models_peewee import db_beahea, PartyReservationHistory, User
+from data import db_funcs_admin_menu
 from utils import easy_funcs
 
 router = Router()
@@ -140,7 +141,7 @@ async def add_table_reservations_number_of_guests(msg: Message, state: FSMContex
             await msg.answer(text=text_reservation.party_reservation.format(
                 booking_start_time=datas['booking_start_time'].strftime('%d-%m-%Y %H:%M'),
                 number_of_guests=datas['number_of_guests']),
-                             reply_markup=kb_table_reservations.yes_no())
+                reply_markup=kb_table_reservations.yes_no())
             await state.set_state(StatePartyReservations.add_party_reservations_confirmation_enter_data)
         elif not check_date:
             await msg.answer(text=text_reservation.err_error
@@ -158,6 +159,10 @@ async def admin_add_table_reservations_confirmation_enter_data(msg: Message, sta
         try:
             with db_beahea.atomic():
                 PartyReservationHistory.create(**datas)
+            from handlers.admin_menu_handlers import sending_messages
+            notification = await db_funcs_admin_menu.l_party_reservation(user_id=user_id,
+                                                                         date_reserve=datas['booking_start_time'])
+            await sending_messages.notification_reservations_today(msg=msg, notification=notification)
             await msg.answer(text=text_reservation.party_successful_data_rec,
                              reply_markup=kb_main_menu.main_menu(user_id=user_id))
             await state.clear()

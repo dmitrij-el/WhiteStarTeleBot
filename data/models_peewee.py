@@ -2,7 +2,7 @@ import datetime
 import logging
 
 from peewee import (CharField, DateTimeField, MySQLDatabase, TextField,
-                    IntegerField, BooleanField, ForeignKeyField)
+                    IntegerField, BooleanField, ForeignKeyField, FloatField)
 from peewee import Model, InternalError, PrimaryKeyField
 
 from config.config import DB_LOGIN, DB_PASSWORD, DB_HOST, DB_NAME, DB_PORT
@@ -20,7 +20,20 @@ data_gender = [
     {'name': 'men', 'symbol': '♂️'},
     {'name': 'women', 'symbol': '♀️'}]
 data_tables = [
-    {'number_table': 1},
+    {'number_table': 0, 'name_table': 'Vip-комната', 'number_of_seats': 6, 'zona': 1, 'cor_x': 12, 'cor_y': 20},
+    {'number_table': 1, 'name_table': 'Стол №1', 'number_of_seats': 4, 'zona': 2, 'cor_x': 12, 'cor_y': 20},
+    {'number_table': 2, 'name_table': 'Стол №2', 'number_of_seats': 4, 'zona': 2, 'cor_x': 12, 'cor_y': 20},
+    {'number_table': 3, 'name_table': 'Стол №3', 'number_of_seats': 9, 'zona': 2, 'cor_x': 12, 'cor_y': 20},
+    {'number_table': 5, 'name_table': 'Стол №5', 'number_of_seats': 6, 'zona': 4, 'cor_x': 12, 'cor_y': 20},
+    {'number_table': 6, 'name_table': 'Стол №6', 'number_of_seats': 6, 'zona': 4, 'cor_x': 12, 'cor_y': 20},
+    {'number_table': 7, 'name_table': 'Стол №7', 'number_of_seats': 6, 'zona': 4, 'cor_x': 12, 'cor_y': 20},
+    {'number_table': 8, 'name_table': 'Стол №8', 'number_of_seats': 6, 'zona': 5, 'cor_x': 12, 'cor_y': 20},
+    {'number_table': 9, 'name_table': 'Стол №9', 'number_of_seats': 6, 'zona': 5, 'cor_x': 12, 'cor_y': 20},
+    {'number_table': 10, 'name_table': 'Стол №10', 'number_of_seats': 6, 'zona': 5, 'cor_x': 12, 'cor_y': 20},
+    {'number_table': 11, 'name_table': 'Стол №11', 'number_of_seats': 9, 'zona': 6, 'cor_x': 12, 'cor_y': 20},
+    {'number_table': 12, 'name_table': 'Стол №12', 'number_of_seats': 6, 'zona': 7, 'cor_x': 12, 'cor_y': 20},
+    {'number_table': 13, 'name_table': 'Стол №13', 'number_of_seats': 6, 'zona': 7, 'cor_x': 12, 'cor_y': 20},
+    {'number_table': 14, 'name_table': 'Стол №14', 'number_of_seats': 6, 'zona': 7, 'cor_x': 12, 'cor_y': 20},
 ]
 
 
@@ -50,8 +63,8 @@ def create_models() -> None:
                     Gender.create(**data_dict)
             table = Table.select()
             if not table:
-                for i in range(1, 19):
-                    Table.create(number_table=i)
+                for data_dict in data_tables:
+                    Table.create(**data_dict)
     except InternalError as pw:
         logging.error(pw)
 
@@ -129,9 +142,13 @@ class Zona(BaseUserModel):
 
 
 class Table(BaseUserModel):
+    id = PrimaryKeyField(unique=True)
     number_table = IntegerField()
+    name_table = CharField(null=True)
     number_of_seats = IntegerField(null=True)
     zona = ForeignKeyField(Zona, backref='zona', null=True)
+    cor_x = FloatField(null=True)
+    cor_y = FloatField(null=True)
 
     class Meta:
         db_table = "table"

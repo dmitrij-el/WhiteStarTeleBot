@@ -10,12 +10,10 @@ from keyboards import kb_main_menu, kb_admin_menu
 from data import db_funcs_admin_menu
 from data.texts import text_admin_navigator
 from data.db_funcs_user_account import check_admin
-from data.models_peewee import db_beahea, TableReservationHistory, Table, PartyReservationHistory, Event, Admin, User
+from data.models_peewee import db_beahea, TableReservationHistory, Table, User
 from utils import easy_funcs
 
 router = Router()
-
-
 
 """
 Управление резервами столов 
@@ -271,6 +269,7 @@ async def admin_add_table_reservations_confirmation_enter_data(msg: Message, sta
             try:
                 with db_beahea.atomic():
                     TableReservationHistory.create(**datas)
+
                 await msg.answer(text=text_admin_navigator.admin_successful_data_rec,
                                  reply_markup=kb_admin_menu.admin_main_menu(user_id=user_id))
                 await state.clear()

@@ -41,8 +41,8 @@ def admin_load_or_cancel(user_id: int) -> ReplyKeyboardMarkup:
     else:
         admin_load_or_cancel_buttons = [[KeyboardButton(text="Главное меню")]]
     admin_load_or_cancel_keyboard = ReplyKeyboardMarkup(keyboard=admin_load_or_cancel_buttons,
-                                              resize_keyboard=True,
-                                              input_field_placeholder='Убедитесь в правильности ввода.')
+                                                        resize_keyboard=True,
+                                                        input_field_placeholder='Убедитесь в правильности ввода.')
     return admin_load_or_cancel_keyboard
 
 

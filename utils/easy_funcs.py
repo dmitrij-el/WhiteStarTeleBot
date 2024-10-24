@@ -2,7 +2,7 @@ import re
 
 from aiogram.utils.media_group import MediaGroupBuilder
 
-from data.models_peewee import User
+from data.models_peewee import User, Table
 from data.texts import text_admin_navigator
 
 
@@ -92,7 +92,8 @@ def correction_datas(phone_number: str = None,
 
 def admin_checking_table_reservations(datas: dict) -> tuple[bool, str]:
     answer = text_admin_navigator.admin_add_table_reservations_confirmation_enter_data
-    answer += (f'\nНомер стола: {datas["table"]}'
+    table = Table.select().where(Table.number_table == datas["table"]).get().name_table
+    answer += (f'\n{table}'
                f'\nКоличество гостей: {datas["number_of_guests"]}'
                f'\nДата и время резерва: {datas["booking_start_time"]}'
                f'\nТелефон: {datas["phone_number"]}')
