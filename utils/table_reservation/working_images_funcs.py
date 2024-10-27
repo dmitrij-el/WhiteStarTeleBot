@@ -9,8 +9,8 @@ async def processing_images(close_tables_list: list) -> Image:
     reserved = Image.open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'reserved.png'))
     modified_plan = plan.copy()
     for num_close_table in close_tables_list:
-        cor_x = data_tables[num_close_table]['cor_x']
-        cor_y = data_tables[num_close_table]['cor_y']
+        cor_x = data_tables[str(num_close_table)]['cor_x']
+        cor_y = data_tables[str(num_close_table)]['cor_y']
         modified_plan.paste(reserved, (cor_x, cor_y))
     if not close_tables_list:
         return os.path.join(os.path.dirname(os.path.abspath(__file__)), 'plan.png')

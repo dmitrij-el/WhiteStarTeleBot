@@ -6,6 +6,7 @@ from aiogram.types import (
 
 from data.models_peewee import data_tables
 
+
 def date_enter(day_date: datetime = None, weeks_fnc: bool = False) -> ReplyKeyboardMarkup:
     date_enter_buttons = [[], []]
     if day_date is None:
@@ -53,7 +54,8 @@ def time_enter(day_date: datetime = None) -> ReplyKeyboardMarkup:
             start_hours += 1
             if start_hours == end_hours:
                 break
-    time_enter_buttons.append([KeyboardButton(text="Отмена")])
+    time_enter_buttons.append([KeyboardButton(text="Отмена"),
+                               KeyboardButton(text="Назад")])
     time_enter_keyboard = ReplyKeyboardMarkup(keyboard=time_enter_buttons,
                                               resize_keyboard=True,
                                               input_field_placeholder='Убедитесь в правильности ввода.')
@@ -62,7 +64,8 @@ def time_enter(day_date: datetime = None) -> ReplyKeyboardMarkup:
 
 def yes_no() -> ReplyKeyboardMarkup:
     yes_no_buttons = [[KeyboardButton(text="Да"),
-                       KeyboardButton(text="Нет")]]
+                       KeyboardButton(text="Нет")],
+                      [KeyboardButton(text='Назад')]]
     yes_no_keyboard = ReplyKeyboardMarkup(keyboard=yes_no_buttons,
                                           resize_keyboard=True,
                                           input_field_placeholder='Выберите соответствующую кнопку.')
@@ -71,24 +74,34 @@ def yes_no() -> ReplyKeyboardMarkup:
 
 def choosing_a_free_table(table_list: list) -> ReplyKeyboardMarkup:
     free_tables_buttons = []
-
     if len(table_list) != 0:
         lines = ((len(table_list) + 1) // 4) + 1
         for i in range(lines):
             free_tables_buttons.append([])
         vip = False
-        for i in range(len(table_list)):
-            line = i // 4 + 1
-            if vip:
-                line += 1
-            kb = data_tables[str(table_list[i])]['symbol']
-            if table_list[i] == '0' and len(table_list) % 4 != 0:
-                free_tables_buttons.insert(0, [KeyboardButton(text=kb)])
-            else:
-                free_tables_buttons[line].append(KeyboardButton(text=kb))
-        if len(table_list) % 4 == 0:
-            free_tables_buttons.append([])
+        if 0 in table_list:
+            len_table_list = len(table_list) - 1
+        else:
+            len_table_list = len(table_list)
+        n = len_table_list // 2 + len_table_list % 2
+        if n == 0:
+            free_tables_buttons.append([KeyboardButton(text=data_tables['0']['symbol'])])
+        else:
+            for i in range(len(table_list)):
+                line = i // n
+                if vip:
+                    line += 1
+                print(line)
+                kb = data_tables[str(table_list[i])]['symbol']
+                print(table_list[i], type(table_list[i]))
+                if table_list[i] == 0:
+                    free_tables_buttons = [[KeyboardButton(text=kb)]] + free_tables_buttons
+                    vip = True
+                else:
+                    free_tables_buttons[line].append(KeyboardButton(text=kb))
+        free_tables_buttons.append([])
         free_tables_buttons[-1].append(KeyboardButton(text='Отмена'))
+        free_tables_buttons[-1].append(KeyboardButton(text='Назад'))
     else:
         free_tables_buttons.append([KeyboardButton(text="Выбрать другое время")])
 
@@ -96,3 +109,26 @@ def choosing_a_free_table(table_list: list) -> ReplyKeyboardMarkup:
                                                resize_keyboard=True,
                                                input_field_placeholder='Выберите соответствующую кнопку.')
     return free_tables_keyboard
+
+
+def number_of_seats(num_table: int) -> ReplyKeyboardMarkup:
+    number_of_seats_buttons = []
+    guests = data_tables[str(num_table)]['number_of_seats']
+    lines = guests // 4 + 1
+    for i in range(lines):
+        number_of_seats_buttons.append([])
+    for i in range(guests):
+        if guests % 3 == 0:
+            n = 3
+        else:
+            n = 4
+        line = i // n
+        number_of_seats_buttons[line].append(KeyboardButton(text=str(i + 1)))
+    if guests % 4 == 0:
+        number_of_seats_buttons.append([])
+    number_of_seats_buttons.append([KeyboardButton(text='Отмена'),
+                                    KeyboardButton(text='Назад')])
+    number_of_seats_keyboard = ReplyKeyboardMarkup(keyboard=number_of_seats_buttons,
+                                                   resize_keyboard=True,
+                                                   input_field_placeholder='Выберите соответствующую кнопку.')
+    return number_of_seats_keyboard

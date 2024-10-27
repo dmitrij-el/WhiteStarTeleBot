@@ -20,22 +20,35 @@ data_gender = [
     {'name': 'men', 'symbol': '♂️'},
     {'name': 'women', 'symbol': '♀️'}]
 data_tables = {
-    '0': {'symbol': '⭐ᴠɪᴘ⭐', 'number_table': 0, 'name_table': 'Vip-комната', 'number_of_seats': 6, 'zona': 1, 'cor_x': 102, 'cor_y': 1511},
-    '1': {'symbol': '①', 'number_table': 1, 'name_table': 'Стол №1', 'number_of_seats': 4, 'zona': 2, 'cor_x': 295, 'cor_y': 1520},
-    '2': {'symbol': '②', 'number_table': 2, 'name_table': 'Стол №2', 'number_of_seats': 4, 'zona': 2, 'cor_x': 500, 'cor_y': 1413},
-    '3': {'symbol': '③', 'number_table': 3, 'name_table': 'Стол №3', 'number_of_seats': 9, 'zona': 2, 'cor_x': 500, 'cor_y': 1508},
-    '5': {'symbol': '⑤', 'number_table': 5, 'name_table': 'Стол №5', 'number_of_seats': 6, 'zona': 4, 'cor_x': 52, 'cor_y': 1285},
-    '6': {'symbol': '⑥', 'number_table': 6, 'name_table': 'Стол №6', 'number_of_seats': 6, 'zona': 4, 'cor_x': 52, 'cor_y': 1083},
-    '7': {'symbol': '⑦', 'number_table': 7, 'name_table': 'Стол №7', 'number_of_seats': 6, 'zona': 4, 'cor_x': 52, 'cor_y': 878},
-    '8': {'symbol': '⑧', 'number_table': 8, 'name_table': 'Стол №8', 'number_of_seats': 6, 'zona': 5, 'cor_x': 52, 'cor_y': 512},
-    '9': {'symbol': '⑨', 'number_table': 9, 'name_table': 'Стол №9', 'number_of_seats': 6, 'zona': 5, 'cor_x': 52, 'cor_y': 311},
-    '10': {'symbol': '⑩', 'number_table': 10, 'name_table': 'Стол №10', 'number_of_seats': 6, 'zona': 5, 'cor_x': 52, 'cor_y': 106},
-    '11': {'symbol': '⑪', 'number_table': 11, 'name_table': 'Стол №11', 'number_of_seats': 9, 'zona': 6, 'cor_x': 239, 'cor_y': 65},
-    '12': {'symbol': '⑫', 'number_table': 12, 'name_table': 'Стол №12', 'number_of_seats': 6, 'zona': 7, 'cor_x': 489, 'cor_y': 54},
-    '13': {'symbol': '⑬', 'number_table': 13, 'name_table': 'Стол №13', 'number_of_seats': 6, 'zona': 7, 'cor_x': 492, 'cor_y': 368},
-    '14': {'symbol': '⑭', 'number_table': 14, 'name_table': 'Стол №14', 'number_of_seats': 6, 'zona': 7, 'cor_x': 218, 'cor_y': 312},
+    '0': {'symbol': '⭐ᴠɪᴘ⭐', 'number_table': 0, 'name_table': 'Vip-комната', 'number_of_seats': 6, 'zona': 1,
+          'cor_x': 85, 'cor_y': 1493},
+    '1': {'symbol': '①', 'number_table': 1, 'name_table': 'Стол №1', 'number_of_seats': 4, 'zona': 2, 'cor_x': 480,
+          'cor_y': 1490},
+    '2': {'symbol': '②', 'number_table': 2, 'name_table': 'Стол №2', 'number_of_seats': 4, 'zona': 2, 'cor_x': 480,
+          'cor_y': 1395},
+    '3': {'symbol': '③', 'number_table': 3, 'name_table': 'Стол №3', 'number_of_seats': 9, 'zona': 2, 'cor_x': 275,
+          'cor_y': 1508},
+    '5': {'symbol': '⑤', 'number_table': 5, 'name_table': 'Стол №5', 'number_of_seats': 6, 'zona': 4, 'cor_x': 32,
+          'cor_y': 1265},
+    '6': {'symbol': '⑥', 'number_table': 6, 'name_table': 'Стол №6', 'number_of_seats': 6, 'zona': 4, 'cor_x': 32,
+          'cor_y': 1063},
+    '7': {'symbol': '⑦', 'number_table': 7, 'name_table': 'Стол №7', 'number_of_seats': 6, 'zona': 4, 'cor_x': 32,
+          'cor_y': 858},
+    '8': {'symbol': '⑧', 'number_table': 8, 'name_table': 'Стол №8', 'number_of_seats': 6, 'zona': 5, 'cor_x': 32,
+          'cor_y': 492},
+    '9': {'symbol': '⑨', 'number_table': 9, 'name_table': 'Стол №9', 'number_of_seats': 6, 'zona': 5, 'cor_x': 32,
+          'cor_y': 291},
+    '10': {'symbol': '⑩', 'number_table': 10, 'name_table': 'Стол №10', 'number_of_seats': 6, 'zona': 5, 'cor_x': 32,
+           'cor_y': 86},
+    '11': {'symbol': '⑪', 'number_table': 11, 'name_table': 'Стол №11', 'number_of_seats': 9, 'zona': 6, 'cor_x': 219,
+           'cor_y': 45},
+    '12': {'symbol': '⑫', 'number_table': 12, 'name_table': 'Стол №12', 'number_of_seats': 6, 'zona': 7, 'cor_x': 469,
+           'cor_y': 34},
+    '13': {'symbol': '⑬', 'number_table': 13, 'name_table': 'Стол №13', 'number_of_seats': 6, 'zona': 7, 'cor_x': 472,
+           'cor_y': 255},
+    '14': {'symbol': '⑭', 'number_table': 14, 'name_table': 'Стол №14', 'number_of_seats': 6, 'zona': 7, 'cor_x': 198,
+           'cor_y': 292},
 }
-
 
 
 def create_models() -> None:
@@ -144,12 +157,13 @@ class Zona(BaseUserModel):
 
 class Table(BaseUserModel):
     id = PrimaryKeyField(unique=True)
+    symbol = CharField()
     number_table = IntegerField()
-    name_table = CharField(null=True)
-    number_of_seats = IntegerField(null=True)
-    zona = ForeignKeyField(Zona, backref='zona', null=True)
-    cor_x = FloatField(null=True)
-    cor_y = FloatField(null=True)
+    name_table = CharField()
+    number_of_seats = IntegerField()
+    zona = ForeignKeyField(Zona, backref='zona')
+    cor_x = FloatField()
+    cor_y = FloatField()
 
     class Meta:
         db_table = "table"
@@ -184,5 +198,3 @@ class PartyReservationHistory(BaseUserModel):
 
     class Meta:
         db_table = 'party_reservation_history'
-
-
