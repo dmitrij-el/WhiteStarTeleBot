@@ -86,5 +86,6 @@ def check_admin(user_id: int = None):
     with db_beahea:
         adm = Admin.select()
         for id_adm in adm:
-            admin_list.append(int(id_adm.user_id))
+            if id_adm.user_id is not None:
+                admin_list.append(int(id_adm.user_id))
     return bool(user_id in admin_list)

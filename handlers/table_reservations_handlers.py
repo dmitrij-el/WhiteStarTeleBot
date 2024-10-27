@@ -9,7 +9,7 @@ from data import db_funcs_admin_menu
 from states.states import StateTableReservations, StateMenu
 from keyboards import kb_main_menu, kb_user_profile, kb_table_reservations
 from data.texts import text_user_profile, text_reservation, text_navigator
-from data.models_peewee import db_beahea, TableReservationHistory, Table, User
+from data.models_peewee import db_beahea, TableReservationHistory, Table, User, data_tables
 from utils import easy_funcs
 from utils.table_reservation import working_images_funcs
 
@@ -134,7 +134,7 @@ async def add_table_reservations_booking_start_time_time(msg: Message, state: FS
             plan_img = FSInputFile(path=path_plan)
             await msg.answer_photo(photo=plan_img,
                                    caption=text_reservation.add_table_reservations_table,
-                                   reply_markup=kb_user_profile.back_button())
+                                   reply_markup=kb_table_reservations.choosing_a_free_table(tables_open))
             await state.set_state(StateTableReservations.add_table_reservations_table)
             os.remove(path=path_plan)
         else:
@@ -154,16 +154,30 @@ async def add_table_reservations_table(msg: Message, state: FSMContext) -> None:
         await state.clear()
         await state.set_state(StateMenu.main_menu)
     else:
+        def prompt_int(x):
+            try:
+                int(x)
+                x = len(x) == 2
+                return bool(x)
+            except ValueError:
+                return False
+
         datas = await state.get_data()
-        if int(prompt) in datas['tables_open']:
+        check_prompt_list = [(value['symbol'], value['name_table']) for value in data_tables.values()]
+        check_prompt_list = [val for values in check_prompt_list for val in values]
+        if prompt in check_prompt_list:
+            for key, value in data_tables.items():
+                if value['symbol'] == prompt or value['name_table'] == prompt:
+                    datas['table'] = int(key)
+        elif prompt_int(prompt):
             datas['table'] = int(prompt)
             del datas['tables_open']
             await state.update_data(**datas)
-
             await msg.answer(text=text_reservation.add_table_reservations_number_of_guests,
                              reply_markup=kb_user_profile.back_button())
             await state.set_state(StateTableReservations.add_table_reservations_number_of_guests)
         else:
+
             await msg.answer(text=text_reservation.add_table_reservations_err_table,
                              reply_markup=kb_user_profile.back_button())
             await state.set_state(StateTableReservations.add_table_reservations_table)

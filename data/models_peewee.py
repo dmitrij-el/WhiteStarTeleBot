@@ -19,22 +19,23 @@ data_zona = [
 data_gender = [
     {'name': 'men', 'symbol': '♂️'},
     {'name': 'women', 'symbol': '♀️'}]
-data_tables = [
-    {'number_table': 0, 'name_table': 'Vip-комната', 'number_of_seats': 6, 'zona': 1, 'cor_x': 102, 'cor_y': 1511},
-    {'number_table': 1, 'name_table': 'Стол №1', 'number_of_seats': 4, 'zona': 2, 'cor_x': 295, 'cor_y': 1520},
-    {'number_table': 2, 'name_table': 'Стол №2', 'number_of_seats': 4, 'zona': 2, 'cor_x': 500, 'cor_y': 1413},
-    {'number_table': 3, 'name_table': 'Стол №3', 'number_of_seats': 9, 'zona': 2, 'cor_x': 500, 'cor_y': 1508},
-    {'number_table': 5, 'name_table': 'Стол №5', 'number_of_seats': 6, 'zona': 4, 'cor_x': 52, 'cor_y': 1285},
-    {'number_table': 6, 'name_table': 'Стол №6', 'number_of_seats': 6, 'zona': 4, 'cor_x': 52, 'cor_y': 1083},
-    {'number_table': 7, 'name_table': 'Стол №7', 'number_of_seats': 6, 'zona': 4, 'cor_x': 52, 'cor_y': 878},
-    {'number_table': 8, 'name_table': 'Стол №8', 'number_of_seats': 6, 'zona': 5, 'cor_x': 52, 'cor_y': 512},
-    {'number_table': 9, 'name_table': 'Стол №9', 'number_of_seats': 6, 'zona': 5, 'cor_x': 52, 'cor_y': 311},
-    {'number_table': 10, 'name_table': 'Стол №10', 'number_of_seats': 6, 'zona': 5, 'cor_x': 52, 'cor_y': 106},
-    {'number_table': 11, 'name_table': 'Стол №11', 'number_of_seats': 9, 'zona': 6, 'cor_x': 239, 'cor_y': 65},
-    {'number_table': 12, 'name_table': 'Стол №12', 'number_of_seats': 6, 'zona': 7, 'cor_x': 489, 'cor_y': 54},
-    {'number_table': 13, 'name_table': 'Стол №13', 'number_of_seats': 6, 'zona': 7, 'cor_x': 492, 'cor_y': 368},
-    {'number_table': 14, 'name_table': 'Стол №14', 'number_of_seats': 6, 'zona': 7, 'cor_x': 218, 'cor_y': 312},
-]
+data_tables = {
+    '0': {'symbol': '⭐ᴠɪᴘ⭐', 'number_table': 0, 'name_table': 'Vip-комната', 'number_of_seats': 6, 'zona': 1, 'cor_x': 102, 'cor_y': 1511},
+    '1': {'symbol': '①', 'number_table': 1, 'name_table': 'Стол №1', 'number_of_seats': 4, 'zona': 2, 'cor_x': 295, 'cor_y': 1520},
+    '2': {'symbol': '②', 'number_table': 2, 'name_table': 'Стол №2', 'number_of_seats': 4, 'zona': 2, 'cor_x': 500, 'cor_y': 1413},
+    '3': {'symbol': '③', 'number_table': 3, 'name_table': 'Стол №3', 'number_of_seats': 9, 'zona': 2, 'cor_x': 500, 'cor_y': 1508},
+    '5': {'symbol': '⑤', 'number_table': 5, 'name_table': 'Стол №5', 'number_of_seats': 6, 'zona': 4, 'cor_x': 52, 'cor_y': 1285},
+    '6': {'symbol': '⑥', 'number_table': 6, 'name_table': 'Стол №6', 'number_of_seats': 6, 'zona': 4, 'cor_x': 52, 'cor_y': 1083},
+    '7': {'symbol': '⑦', 'number_table': 7, 'name_table': 'Стол №7', 'number_of_seats': 6, 'zona': 4, 'cor_x': 52, 'cor_y': 878},
+    '8': {'symbol': '⑧', 'number_table': 8, 'name_table': 'Стол №8', 'number_of_seats': 6, 'zona': 5, 'cor_x': 52, 'cor_y': 512},
+    '9': {'symbol': '⑨', 'number_table': 9, 'name_table': 'Стол №9', 'number_of_seats': 6, 'zona': 5, 'cor_x': 52, 'cor_y': 311},
+    '10': {'symbol': '⑩', 'number_table': 10, 'name_table': 'Стол №10', 'number_of_seats': 6, 'zona': 5, 'cor_x': 52, 'cor_y': 106},
+    '11': {'symbol': '⑪', 'number_table': 11, 'name_table': 'Стол №11', 'number_of_seats': 9, 'zona': 6, 'cor_x': 239, 'cor_y': 65},
+    '12': {'symbol': '⑫', 'number_table': 12, 'name_table': 'Стол №12', 'number_of_seats': 6, 'zona': 7, 'cor_x': 489, 'cor_y': 54},
+    '13': {'symbol': '⑬', 'number_table': 13, 'name_table': 'Стол №13', 'number_of_seats': 6, 'zona': 7, 'cor_x': 492, 'cor_y': 368},
+    '14': {'symbol': '⑭', 'number_table': 14, 'name_table': 'Стол №14', 'number_of_seats': 6, 'zona': 7, 'cor_x': 218, 'cor_y': 312},
+}
+
 
 
 def create_models() -> None:
@@ -63,7 +64,7 @@ def create_models() -> None:
                     Gender.create(**data_dict)
             table = Table.select()
             if not table:
-                for data_dict in data_tables:
+                for id, data_dict in data_tables.items():
                     Table.create(**data_dict)
     except InternalError as pw:
         logging.error(pw)

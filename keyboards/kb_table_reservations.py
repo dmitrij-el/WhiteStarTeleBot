@@ -4,6 +4,7 @@ from aiogram.types import (
     ReplyKeyboardMarkup
 )
 
+from data.models_peewee import data_tables
 
 def date_enter(day_date: datetime = None, weeks_fnc: bool = False) -> ReplyKeyboardMarkup:
     date_enter_buttons = [[], []]
@@ -66,3 +67,32 @@ def yes_no() -> ReplyKeyboardMarkup:
                                           resize_keyboard=True,
                                           input_field_placeholder='Выберите соответствующую кнопку.')
     return yes_no_keyboard
+
+
+def choosing_a_free_table(table_list: list) -> ReplyKeyboardMarkup:
+    free_tables_buttons = []
+
+    if len(table_list) != 0:
+        lines = ((len(table_list) + 1) // 4) + 1
+        for i in range(lines):
+            free_tables_buttons.append([])
+        vip = False
+        for i in range(len(table_list)):
+            line = i // 4 + 1
+            if vip:
+                line += 1
+            kb = data_tables[str(table_list[i])]['symbol']
+            if table_list[i] == '0' and len(table_list) % 4 != 0:
+                free_tables_buttons.insert(0, [KeyboardButton(text=kb)])
+            else:
+                free_tables_buttons[line].append(KeyboardButton(text=kb))
+        if len(table_list) % 4 == 0:
+            free_tables_buttons.append([])
+        free_tables_buttons[-1].append(KeyboardButton(text='Отмена'))
+    else:
+        free_tables_buttons.append([KeyboardButton(text="Выбрать другое время")])
+
+    free_tables_keyboard = ReplyKeyboardMarkup(keyboard=free_tables_buttons,
+                                               resize_keyboard=True,
+                                               input_field_placeholder='Выберите соответствующую кнопку.')
+    return free_tables_keyboard

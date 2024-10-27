@@ -30,7 +30,6 @@ async def notification_reservations(bot: Bot, admin_id: int):
         await bot.send_message(chat_id=admin_id, text=ans)
 
 
-
 async def notification_reservations_today(msg: Message, notification: str):
     try:
         admin_list = list()
@@ -39,7 +38,6 @@ async def notification_reservations_today(msg: Message, notification: str):
             for id_adm in adm:
                 admin_list.append(int(id_adm.user_id))
         for admin_id in admin_list:
-            print(admin_id, type(admin_id))
             await msg.bot.send_message(chat_id=admin_id, text=notification)
     except Exception as exp:
         logging.error(
@@ -52,7 +50,8 @@ def scheduler_args(bot: Bot, scheduler: AsyncIOScheduler):
     with db_beahea:
         adm = Admin.select()
         for id_adm in adm:
-            admin_list.append(int(id_adm.user_id))
+            if id_adm.user_id is not None:
+                admin_list.append(int(id_adm.user_id))
 
     for adm_id in admin_list:
         scheduler.add_job(notification_reservations, 'cron', hour=14, minute=00, args=(bot, adm_id))
