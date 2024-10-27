@@ -92,7 +92,7 @@ async def main():
 
 
 if __name__ == "__main__":
-    locale.setlocale(category=locale.LC_ALL, locale="ru-RU.UTF-8")
+    locale.setlocale(locale.LC_ALL, ('ru_RU', 'UTF-8'))
     models_peewee.create_models()
     logging.basicConfig(
         level=logging.INFO,
