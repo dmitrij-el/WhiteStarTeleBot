@@ -169,6 +169,10 @@ async def add_table_reservations_table(msg: Message, state: FSMContext) -> None:
             for key, value in data_tables.items():
                 if value['symbol'] == prompt or value['name_table'] == prompt:
                     datas['table'] = int(key)
+            await state.update_data(**datas)
+            await msg.answer(text=text_reservation.add_table_reservations_number_of_guests,
+                             reply_markup=kb_user_profile.back_button())
+            await state.set_state(StateTableReservations.add_table_reservations_number_of_guests)
         elif prompt_int(prompt):
             datas['table'] = int(prompt)
             del datas['tables_open']
