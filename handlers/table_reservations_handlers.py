@@ -6,7 +6,6 @@ from aiogram.types import Message, FSInputFile
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import Filter
 
-
 from data import db_funcs_admin_menu
 from states.states import StateTableReservations, StateMenu
 from keyboards import kb_main_menu, kb_user_profile, kb_table_reservations
@@ -61,7 +60,6 @@ async def back_table_reservations(msg: Message, state: FSMContext) -> None:
         await msg.answer(text=text_reservation.add_table_reservations_number_of_guests,
                          reply_markup=kb_table_reservations.number_of_seats(datas['table']))
         await state.set_state(StateTableReservations.add_table_reservations_number_of_guests)
-
 
 
 @router.message(StateTableReservations.main_table_reservations)
@@ -254,6 +252,7 @@ async def add_table_reservations_number_of_guests(msg: Message, state: FSMContex
                 return bool(x)
             except ValueError:
                 return False
+
         datas = await state.get_data()
         table = datas['table']
         max_quests = data_tables[str(table)]['number_of_seats']

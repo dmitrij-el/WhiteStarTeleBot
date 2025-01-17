@@ -1,5 +1,5 @@
 # WhiteStar TelegramBot
-<img src="data/images/star.png" alt="drawing" width="200"/>
+![Star](data/images/star.png)
 
 ### For SerGey from Dmitriy Ivanyuk 🤪😇
 ### 🤖 Бот разработан для 🌟WhiteStar Алтуфьево🌟.

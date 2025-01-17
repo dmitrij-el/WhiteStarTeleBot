@@ -59,9 +59,8 @@ def checking_data_expression(phone_number: str | bool = False,
         expression = expressions_dir["number_of_guests"]
         data = number_of_guests
 
-    pattern = re.compile(expression)
-    res = pattern.search(str(data))
-    if res:
+    result = re.compile(expression)
+    if result.search(str(data)):
         return True
     else:
         return False

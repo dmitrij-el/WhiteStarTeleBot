@@ -90,8 +90,6 @@ db_beahea = MySQLDatabase(DB_NAME,
                           port=int(DB_PORT))
 
 
-# db_beahea = SqliteDatabase('./db_db')
-
 
 class BaseUserModel(Model):
     class Meta:
